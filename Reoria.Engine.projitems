@@ -10,5 +10,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Base\Common\Disposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\EngineLoggingInitalizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\Interfaces\IEngineLoggingInitalizer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
