@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Base\Common\Disposable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\EngineLoggingInitalizer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\Interfaces\IEngineLoggingInitalizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\SerilogLoggingInitalizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)appsettings.json">
