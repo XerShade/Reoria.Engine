@@ -13,6 +13,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logging\EngineLoggingInitalizer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\Interfaces\IEngineLoggingInitalizer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\SerilogLoggingInitalizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\EngineServiceContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)appsettings.json">
