@@ -74,9 +74,9 @@ public abstract class Disposable : IDisposable, IAsyncDisposable
     }
     /// <summary>
     /// Synchronously disposes resources of the object.
-    /// This is called by <see cref="Dispose"/> to release managed and unmanaged resources synchronously.
+    /// This is called by <see cref="Dispose()"/> to release managed and unmanaged resources synchronously.
     /// </summary>
-    /// <param name="disposing">Indicates whether the method is being called from the <see cref="Dispose"/> method (true) or the finalizer (false).</param>
+    /// <param name="disposing">Indicates whether the method is being called from the <see cref="Dispose()"/> method (true) or the finalizer (false).</param>
     protected virtual void Dispose(bool disposing)
     {
         // Check to see if the object has been disposed or not.
@@ -122,9 +122,9 @@ public abstract class Disposable : IDisposable, IAsyncDisposable
     }
     /// <summary>
     /// Asynchronously disposes resources of the object.
-    /// This is called by <see cref="DisposeAsync"/> to release managed and unmanaged resources asynchronously.
+    /// This is called by <see cref="DisposeAsync()"/> to release managed and unmanaged resources asynchronously.
     /// </summary>
-    /// <param name="disposing">Indicates whether the method is being called from the <see cref="Dispose"/> method (true) or the finalizer (false).</param>
+    /// <param name="disposing">Indicates whether the method is being called from the <see cref="DisposeAsync()"/> method (true) or the finalizer (false).</param>
     /// <returns>A task representing the asynchronous disposal operation.</returns>
     protected virtual async ValueTask DisposeAsync(bool disposing)
     {
