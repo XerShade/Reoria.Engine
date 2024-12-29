@@ -18,8 +18,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceLoader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)appsettings.json">
+    <None Include="$(MSBuildThisFileDirectory)appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 </Project>
