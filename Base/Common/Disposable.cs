@@ -19,12 +19,12 @@ public abstract class Disposable : IDisposable, IAsyncDisposable
     /// multiple threads from attempting to dispose of the resource simultaneously.
     /// </summary>
     /// <remarks>
-    /// The <see cref="disposeLock"/> is a protected property, meaning it can be accessed 
+    /// The <see cref="@lock"/> is a protected property, meaning it can be accessed 
     /// within the class and its derived classes, but not outside of them. The lock object 
     /// is initialized by default to a new instance of the <see cref="Lock"/> class, which 
     /// provides the necessary mechanisms for thread synchronization.
     /// </remarks>
-    protected Lock disposeLock { get; private set; } = new Lock();
+    protected Lock @lock { get; private set; } = new();
 
     /// <summary>
     /// Finalizer (destructor) for the class. It is called when the object is about to be garbage collected.
@@ -33,7 +33,7 @@ public abstract class Disposable : IDisposable, IAsyncDisposable
     ~Disposable()
     {
         // Ensure thread-safe disposal by acquiring the lock.
-        lock (this.disposeLock)
+        lock (this.@lock)
         {
             // Check to see if the object has been disposed or not.
             if (!this.isDisposed)
@@ -56,7 +56,7 @@ public abstract class Disposable : IDisposable, IAsyncDisposable
     public void Dispose()
     {
         // Ensure thread-safe disposal by acquiring the lock.
-        lock (this.disposeLock)
+        lock (this.@lock)
         {
             // Check to see if the object has been disposed or not.
             if (!this.isDisposed)
@@ -107,7 +107,7 @@ public abstract class Disposable : IDisposable, IAsyncDisposable
             await this.DisposeAsync(disposing: true);
 
             // Ensure thread-safe disposal by acquiring the lock.
-            lock (this.disposeLock)
+            lock (this.@lock)
             {
                 // Call the dispose function, and free managed resources manually.
                 this.Dispose(disposing: true);
