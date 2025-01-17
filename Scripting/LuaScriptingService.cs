@@ -7,13 +7,15 @@ namespace Reoria.Engine.Scripting;
 public class LuaScriptingService : IScriptingService
 {
     protected readonly ILogger<IScriptingService> logger;
+    protected readonly IScriptLoader scriptLoader;
     protected readonly Lua luaEngine;
 
-    public LuaScriptingService(ILogger<IScriptingService> logger)
+    public LuaScriptingService(ILogger<IScriptingService> logger, IScriptLoader scriptLoader)
     {
         ArgumentNullException.ThrowIfNull(logger);
 
         this.logger = logger;
+        this.scriptLoader = scriptLoader;
         this.luaEngine = new Lua();
 
         this.logger.LogInformation("Initalized {scriptingEngine}...", this.GetType().Name);
@@ -23,7 +25,10 @@ public class LuaScriptingService : IScriptingService
     {
         try
         {
-            _ = this.luaEngine.DoFile(scriptPath);
+            StreamReader streamReader = new(this.scriptLoader.OpenStream(scriptPath));
+            string luaScript = streamReader.ReadToEnd();
+
+            _ = this.luaEngine.DoString(luaScript);
         }
         catch (Exception ex)
         {

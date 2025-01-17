@@ -14,7 +14,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logging\Interfaces\IEngineLoggingInitalizer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\SerilogLoggingInitalizer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptingService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptingService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\EngineServiceContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceLoader.cs" />
@@ -22,9 +24,6 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)Scripting\LoggerTest.lua">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
