@@ -6,10 +6,7 @@ namespace Reoria.Engine.Scripting.ServiceLoaders;
 
 public class LuaServiceLoader : IEngineServiceLoader
 {
-    public void AddServices(IServiceCollection services)
-    {
-        services.AddSingleton<IScriptingService, LuaScriptingService>();
-    }
+    public void AddServices(IServiceCollection services) => services.AddSingleton<IScriptingService, LuaScriptingService>();
 
     public void ConfigureServices(IServiceProvider provider)
     {
