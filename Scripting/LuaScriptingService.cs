@@ -42,9 +42,4 @@ public class LuaScriptingService : IScriptingService
             this.logger.LogError(ex, "Error registering function '{functionName}': {message}", function.Method.Name, ex.Message);
         }
     }
-
-    public void LogInformation(string message) => this.logger.LogInformation("[LUA] " + message);
-    public void LogDebug(string message) => this.logger.LogDebug("[LUA] " + message);
-    public void LogWarning(string message) => this.logger.LogWarning("[LUA] " + message);
-    public void LogError(string message) => this.logger.LogError("[LUA] " + message);
 }
