@@ -60,7 +60,7 @@ public class LuaScriptingService : IScriptingService
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         try
         {
-            if (!fullName.Contains("."))
+            if (!fullName.Contains('.') && this.luaEngine[fullName] == null)
             {
                 this.luaEngine[fullName] = function;
                 this.logger.LogDebug("Registered function {functionName} under namespace {namespace}.", fullName, fullName);
@@ -88,8 +88,11 @@ public class LuaScriptingService : IScriptingService
             }
 
             string functionName = parts[^1];
-            currentTable[functionName] = function;
-            this.logger.LogDebug("Registered function {functionName} under namespace {namespace}.", functionName, fullName);
+            if(currentTable[functionName] == null)
+            {
+                currentTable[functionName] = function;
+                this.logger.LogDebug("Registered function {functionName} under namespace {namespace}.", functionName, fullName);
+            }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
         catch (Exception ex)
