@@ -16,8 +16,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Attributes\ScriptFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptingService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptLogging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptingService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptLogging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\EngineServiceContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceLoader.cs" />

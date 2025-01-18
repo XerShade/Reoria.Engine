@@ -168,8 +168,4 @@ public class LuaScriptingService : IScriptingService
 
         return serviceProvider.GetService(declaringType);
     }
-
-    // Temporary code, will be removed later. Do not use aside from testing.
-    [ScriptFunction("Logging.LogInformation")]
-    public static void LogInformation(string message) => staticLogger.LogInformation(message);
 }
