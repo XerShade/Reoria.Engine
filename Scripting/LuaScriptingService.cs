@@ -9,7 +9,6 @@ namespace Reoria.Engine.Scripting;
 
 public class LuaScriptingService : IScriptingService
 {
-    protected static ILogger<IScriptingService> staticLogger; // Temporary code.
     protected readonly ILogger<IScriptingService> logger;
     protected readonly IServiceProvider serviceProvider;
     protected readonly IScriptLoader scriptLoader;
@@ -20,14 +19,12 @@ public class LuaScriptingService : IScriptingService
         ArgumentNullException.ThrowIfNull(logger);
 
         this.logger = logger;
-        staticLogger = logger; // Temporary code.
         this.scriptLoader = scriptLoader;
         this.serviceProvider = serviceProvider;
         this.luaEngine = new Lua();
 
         this.logger.LogInformation("Initalized {scriptingEngine}...", this.GetType().Name);
     }
-
 
     [ScriptFunction("ScriptingService.ExecuteScript")]
     public void ExecuteScript(string scriptPath)
@@ -152,20 +149,20 @@ public class LuaScriptingService : IScriptingService
         }
     }
 
-    protected virtual object? ResolveServiceFromContainer(Type? declaringType)
+    protected virtual object? ResolveServiceFromContainer(Type? serviceType)
     {
-        if (declaringType == null)
+        if (serviceType == null)
         {
             throw new NullReferenceException("DeclaringType is null.");
         }
 
-        Type? interfaceType = declaringType.GetInterfaces()
+        Type? interfaceType = serviceType.GetInterfaces()
             .FirstOrDefault(i => serviceProvider.GetService(i) != null);
         if (interfaceType != null)
         {
-            return serviceProvider.GetService(interfaceType);
+            return this.serviceProvider.GetService(interfaceType);
         }
 
-        return serviceProvider.GetService(declaringType);
+        return this.serviceProvider.GetService(serviceType);
     }
 }
