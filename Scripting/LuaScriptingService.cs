@@ -34,23 +34,12 @@ public class LuaScriptingService : IScriptingService
             using StreamReader streamReader = new(this.scriptLoader.OpenStream(scriptPath));
             string luaScript = streamReader.ReadToEnd();
 
-            try
-            {
-                _ = this.luaEngine.DoString(luaScript);
-            }
-            catch (Exception luaEx)
-            {
-                // Log details about the Lua error.
-                this.logger.LogError(luaEx, "Lua script execution error in {scriptPath}: {message}", scriptPath, luaEx.Message);
-
-                // Re-throw the exception if needed for further handling.
-                throw;
-            }
+            _ = this.luaEngine.DoString(luaScript);
         }
         catch (Exception ex)
         {
             // Log any file reading or general execution errors.
-            this.logger.LogError(ex, "Error executing script {scriptPath}: {message}", scriptPath, ex.Message);
+            this.logger.LogError(ex, "Lua script execution error in {scriptPath}: {message}", scriptPath, luaEx.Message);
         }
     }
 
