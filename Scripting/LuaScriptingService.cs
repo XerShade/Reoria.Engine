@@ -39,7 +39,7 @@ public class LuaScriptingService : IScriptingService
         catch (Exception ex)
         {
             // Log any file reading or general execution errors.
-            this.logger.LogError(ex, "Lua script execution error in {scriptPath}: {message}", scriptPath, luaEx.Message);
+            this.logger.LogError(ex, "Lua script execution error in {scriptPath}: {message}", scriptPath, ex.Message);
         }
     }
 
