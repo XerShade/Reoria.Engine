@@ -43,6 +43,19 @@ public class LuaScriptingService : IScriptingService
         }
     }
 
+    [ScriptFunction("ScriptingService.ExecuteFunction")]
+    public void ExecuteFunction(string functionName, params object[] args)
+    {
+        try
+        {
+            _ = this.luaEngine.GetFunction(functionName).Call(args);
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, "Error executing function {functionName}: {message}", functionName, ex.Message);
+        }
+    }
+
     [ScriptFunction("ScriptingService.RegisterFunction")]
     public void RegisterFunction(string fullName, Delegate function)
     {
