@@ -20,6 +20,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptingService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptLogging.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Factories\Interfaces\ISaltGeneratorFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Factories\SaltGeneratorFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Interfaces\ISaltGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\SaltGeneratorConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\SaltGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\EngineServiceContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceLoader.cs" />
