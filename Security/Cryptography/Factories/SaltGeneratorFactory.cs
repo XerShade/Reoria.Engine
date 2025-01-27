@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Reoria.Engine.Security.Cryptography.Factories.Interfaces;
+using Reoria.Engine.Security.Cryptography.Interfaces;
 
 namespace Reoria.Engine.Security.Cryptography.Factories;
 
@@ -34,12 +35,12 @@ public class SaltGeneratorFactory : ISaltGeneratorFactory
     /// </summary>
     /// <returns>A new instance of <see cref="SaltGenerator"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the service provider is not assigned.</exception>
-    public static SaltGenerator Create()
+    public static ISaltGenerator Create()
     {
         // Throws an exception if the ServiceProvider is not assigned.
         ArgumentNullException.ThrowIfNull(SaltGeneratorFactory.ServiceProvider);
 
         // Resolves and returns a new instance of <see cref="SaltGenerator"/> from the ServiceProvider.
-        return SaltGeneratorFactory.ServiceProvider.GetRequiredService<SaltGenerator>();
+        return SaltGeneratorFactory.ServiceProvider.GetRequiredService<ISaltGenerator>();
     }
 }

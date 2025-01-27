@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Reoria.Engine.Security.Cryptography.Factories.Interfaces;
+using Reoria.Engine.Security.Cryptography.Interfaces;
 
 namespace Reoria.Engine.Security.Cryptography.Factories;
 
@@ -31,12 +32,12 @@ public class HashGeneratorFactory : IHashGeneratorFactory
     /// </summary>
     /// <returns>A new instance of <see cref="HashGenerator"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the service provider is not assigned.</exception>
-    public static HashGenerator Create()
+    public static IHashGenerator Create()
     {
         // Ensure the service provider is assigned before trying to resolve services
         ArgumentNullException.ThrowIfNull(HashGeneratorFactory.ServiceProvider);
 
         // Resolve and return the HashGenerator instance from the service provider
-        return HashGeneratorFactory.ServiceProvider.GetRequiredService<HashGenerator>();
+        return HashGeneratorFactory.ServiceProvider.GetRequiredService<IHashGenerator>();
     }
 }

@@ -16,7 +16,7 @@ public readonly struct HashGeneratorConfiguration(IConfiguration configuration)
     /// <summary>
     /// Defines the default cryptographic algorithm to be used.
     /// </summary>
-    public const string DEFAULT_ALGORITHM = "SHA-256";
+    public const string DEFAULT_ALGORITHM = "SHA256";
     /// <summary>
     /// Defines the default namespace in which the cryptographic algorithm class resides.
     /// </summary>
