@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logging\SerilogLoggingInitalizer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Interfaces\IXnaGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\XnaGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MonoGame\XnaGameServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Attributes\ScriptFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptingService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptLoader.cs" />
