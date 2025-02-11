@@ -85,6 +85,8 @@ public class XnaGameServer : Disposable, IXnaGame
         this.isRunning = false;
     }
 
+    public void Exit() => this.tickGameLoop = false;
+
     protected virtual void FixedUpdate(GameTime gameTime)
     {
 
