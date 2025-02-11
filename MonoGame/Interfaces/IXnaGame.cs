@@ -6,5 +6,5 @@ public interface IXnaGame : IDisposable
 {
     GameServiceContainer Services { get; }
     void Run();
-    void SetPerformanceSettings(int newMaxFPS, int fixedUpdateRate, int maxFixedSteps, bool enableVSync);
+    void SetPerformanceSettings(int fixedUpdateRate, int maxFixedSteps, int newMaxFPS, bool enableVSync);
 }

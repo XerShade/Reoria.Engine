@@ -42,7 +42,7 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
         this.useVSync = true;
     }
 
-    public void SetPerformanceSettings(int newMaxFPS, int fixedUpdateRate, int maxFixedSteps, bool enableVSync)
+    public void SetPerformanceSettings(int fixedUpdateRate, int maxFixedSteps, int newMaxFPS, bool enableVSync)
     {
         this.maxFPS = Math.Clamp(newMaxFPS, 1, 240);
         this.fixedTimeStep = 1.0 / Math.Clamp(fixedUpdateRate, 1, 240);
