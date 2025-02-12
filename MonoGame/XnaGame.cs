@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Reoria.Engine.MonoGame.Interfaces;
+using Reoria.Engine.StateMachines.Interfaces;
 using XnaGameBase = Microsoft.Xna.Framework.Game;
 
 namespace Reoria.Engine.MonoGame;
@@ -9,6 +10,7 @@ namespace Reoria.Engine.MonoGame;
 public abstract class XnaGame : XnaGameBase, IXnaGame
 {
     protected readonly GraphicsDeviceManager Graphics;
+    protected readonly IStateMachine stateMachine;
     protected SpriteBatch? SpriteBatch;
 
     protected double fixedTimeStep;
@@ -19,7 +21,7 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
     protected int maxFixedUpdatesPerFrame;
     protected bool useVSync;
 
-    public XnaGame()
+    public XnaGame(IStateMachine stateMachine)
     {
         this.Graphics = new GraphicsDeviceManager(this)
         {
@@ -32,6 +34,7 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
 
         this.LoadPerformanceSettings();
         this.ApplyPerformanceSettings();
+        this.stateMachine = stateMachine;
     }
 
     protected virtual void LoadPerformanceSettings()
@@ -57,6 +60,12 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
 
         this.targetElapsedTime = this.useVSync ? TimeSpan.Zero : TimeSpan.FromSeconds(1.0 / this.maxFPS);
         this.Graphics.ApplyChanges();
+    }
+
+    public virtual IXnaGame ChangeState<TState>() where TState : class, IState, new()
+    {
+        this.stateMachine.ChangeState<TState>();
+        return this;
     }
 
     protected override void Initialize()
@@ -85,6 +94,8 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
             fixedUpdateCount++;
         }
 
+        this.stateMachine.Update(gameTime);
+
         base.Update(gameTime);
 
         if (!this.useVSync)
@@ -93,10 +104,7 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
         }
     }
 
-    protected virtual void FixedUpdate(GameTime gameTime)
-    {
-
-    }
+    protected virtual void FixedUpdate(GameTime gameTime) => this.stateMachine.FixedUpdate(gameTime);
 
     protected virtual void ThrottleFPS()
     {
@@ -116,6 +124,8 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
     protected override void Draw(GameTime gameTime)
     {
         this.GraphicsDevice.Clear(Color.CornflowerBlue);
+
+        this.stateMachine.Draw(gameTime);
 
         base.Draw(gameTime);
     }
