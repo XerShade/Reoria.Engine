@@ -15,6 +15,10 @@ public interface IStateMachine
     /// Gets the previous state of the state machine.
     /// </summary>
     IState? PreviousState { get; }
+    /// <summary>
+    /// The service provider used for dependency injection, allowing access to services throughout the application.
+    /// </summary>
+    IServiceProvider ServiceProvider { get; }
 
     /// <summary>
     /// Changes the current state of the state machine to a new state.

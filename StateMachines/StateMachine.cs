@@ -7,7 +7,7 @@ namespace Reoria.Engine.StateMachines;
 /// <summary>
 /// Represents a state machine that manages states and their transitions.
 /// </summary>
-public abstract class StateMachine(ILogger<IStateMachine> logger) : IStateMachine
+public class StateMachine(ILogger<IStateMachine> logger, IServiceProvider serviceProvider) : IStateMachine
 {
     /// <summary>
     /// Logger to log information for debugging purposes.
@@ -30,6 +30,10 @@ public abstract class StateMachine(ILogger<IStateMachine> logger) : IStateMachin
     /// The previously active state of the state machine.
     /// </summary>
     public IState? PreviousState { get; protected set; }
+    /// <summary>
+    /// The service provider used for dependency injection, allowing access to services throughout the application.
+    /// </summary>
+    public IServiceProvider ServiceProvider { get; protected set; } = serviceProvider;
 
     /// <summary>
     /// Changes the current state of the state machine to a new state.
@@ -66,6 +70,7 @@ public abstract class StateMachine(ILogger<IStateMachine> logger) : IStateMachin
                 {
                     // Create a new instance of the state.
                     TState newState = Activator.CreateInstance<TState>();
+                    newState.StateMachine = this;
 
                     // Add the new state to the cache and use it.
                     this.StateCache.Add(newState);
