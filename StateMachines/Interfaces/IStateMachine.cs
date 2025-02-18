@@ -41,3 +41,44 @@ public interface IStateMachine
     /// <param name="gameTime">Provides game timing information, such as elapsed time since the last update.</param>
     void Draw(GameTime gameTime);
 }
+
+/// <summary>
+/// Defines a state machine that manages specific types of state transitions and updates.
+/// </summary>
+/// <typeparam name="TStateType">The type of state this state machine handles. It must be a type that implements <see cref="IState"/> and has a parameterless constructor.</typeparam>
+public interface IStateMachine<TStateType> where TStateType : IState, new()
+{
+    /// <summary>
+    /// Gets the current state of the state machine.
+    /// </summary>
+    public TStateType? CurrentState { get; }
+    /// <summary>
+    /// Gets the previous state of the state machine.
+    /// </summary>
+    public TStateType? PreviousState { get; }
+    /// <summary>
+    /// The service provider used for dependency injection, allowing access to services throughout the application.
+    /// </summary>
+    IServiceProvider ServiceProvider { get; }
+
+    /// <summary>
+    /// Changes the current state of the state machine to a new state.
+    /// </summary>
+    /// <typeparam name="TState">The type of the state to transition to. It must be a class that implements <see href="TStateType" /> and has a parameterless constructor.</typeparam>
+    void ChangeState<TState>() where TState : class, TStateType, new();
+    /// <summary>
+    /// Updates the state machine in the fixed update cycle. This is where time-based logic (such as physics or animations) is often processed.
+    /// </summary>
+    /// <param name="gameTime">Provides game timing information, such as elapsed time since the last update.</param>
+    void FixedUpdate(GameTime gameTime);
+    /// <summary>
+    /// Updates the state machine in the regular update cycle. This is where logic such as input handling and non-time-dependent updates typically occur.
+    /// </summary>
+    /// <param name="gameTime">Provides game timing information, such as elapsed time since the last update.</param>
+    void Update(GameTime gameTime);
+    /// <summary>
+    /// Draws the current state to the screen. This is where rendering code is typically handled.
+    /// </summary>
+    /// <param name="gameTime">Provides game timing information, such as elapsed time since the last update.</param>
+    void Draw(GameTime gameTime);
+}

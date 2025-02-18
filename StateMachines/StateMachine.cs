@@ -5,8 +5,10 @@ using Reoria.Engine.StateMachines.Interfaces;
 namespace Reoria.Engine.StateMachines;
 
 /// <summary>
-/// Represents a state machine that manages states and their transitions.
+/// Represents a basic state machine that manages states and their transitions.
 /// </summary>
+/// <param name="logger">Logger to log information for debugging purposes.</param>
+/// <param name="serviceProvider">The service provider used for dependency injection, allowing access to services throughout the application.</param>
 public class StateMachine(ILogger<IStateMachine> logger, IServiceProvider serviceProvider) : IStateMachine
 {
     /// <summary>
@@ -140,4 +142,62 @@ public class StateMachine(ILogger<IStateMachine> logger, IServiceProvider servic
             }
         }
     }
+}
+
+/// <summary>
+/// Represents a state machine that manages specific types of states and their transitions.
+/// </summary>
+/// <typeparam name="TStateType">The type of state this state machine handles. It must be a type that implements <see cref="IState"/> and has a parameterless constructor.</typeparam>
+/// <param name="logger">Logger to log information for debugging purposes.</param>
+/// <param name="serviceProvider">The service provider used for dependency injection, allowing access to services throughout the application.</param>
+public class StateMachine<TStateType>(ILogger<IStateMachine> logger, IServiceProvider serviceProvider) : StateMachine(logger, serviceProvider), IStateMachine<TStateType> where TStateType : IState, new()
+{
+
+    /// <summary>
+    /// The current active state of the state machine.
+    /// </summary>
+    TStateType? IStateMachine<TStateType>.CurrentState
+    {
+        get
+        {
+            lock (this.@lock)
+            {
+                // If there is a current state, return it.
+                if (base.CurrentState != null)
+                {
+                    return (TStateType)base.CurrentState;
+                }
+
+                // If there is not a current state, return default.
+                return default;
+            }
+        }
+    }
+
+    /// <summary>
+    /// The previously active state of the state machine.
+    /// </summary>
+    TStateType? IStateMachine<TStateType>.PreviousState
+    {
+        get
+        {
+            lock (this.@lock)
+            {
+                // If there is a previous state, return it.
+                if (base.PreviousState != null)
+                {
+                    return (TStateType)base.PreviousState;
+                }
+
+                // If there is not a previous state, return default.
+                return default;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Changes the current state of the state machine to a new state.
+    /// </summary>
+    /// <typeparam name="TState">The type of the state to transition to. It must be a class that implements <see cref="IState"/> and has a parameterless constructor.</typeparam>
+    public new virtual void ChangeState<TState>() where TState : class, TStateType, new() => base.ChangeState<TState>();
 }
