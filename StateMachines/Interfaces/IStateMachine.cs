@@ -46,7 +46,7 @@ public interface IStateMachine
 /// Defines a state machine that manages specific types of state transitions and updates.
 /// </summary>
 /// <typeparam name="TStateType">The type of state this state machine handles. It must be a type that implements <see cref="IState"/> and has a parameterless constructor.</typeparam>
-public interface IStateMachine<TStateType> where TStateType : IState, new()
+public interface IStateMachine<TStateType> where TStateType : IState
 {
     /// <summary>
     /// Gets the current state of the state machine.

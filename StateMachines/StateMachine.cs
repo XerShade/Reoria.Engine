@@ -150,7 +150,7 @@ public class StateMachine(ILogger<IStateMachine> logger, IServiceProvider servic
 /// <typeparam name="TStateType">The type of state this state machine handles. It must be a type that implements <see cref="IState"/> and has a parameterless constructor.</typeparam>
 /// <param name="logger">Logger to log information for debugging purposes.</param>
 /// <param name="serviceProvider">The service provider used for dependency injection, allowing access to services throughout the application.</param>
-public class StateMachine<TStateType>(ILogger<IStateMachine> logger, IServiceProvider serviceProvider) : StateMachine(logger, serviceProvider), IStateMachine<TStateType> where TStateType : IState, new()
+public class StateMachine<TStateType>(ILogger<IStateMachine> logger, IServiceProvider serviceProvider) : StateMachine(logger, serviceProvider), IStateMachine<TStateType> where TStateType : IState
 {
 
     /// <summary>
