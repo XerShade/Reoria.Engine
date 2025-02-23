@@ -29,7 +29,7 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
             PreferredBackBufferHeight = 720
         };
 
-        this.Content.RootDirectory = "Content";
+        this.Content.RootDirectory = "Assets";
         this.IsMouseVisible = true;
 
         this.LoadPerformanceSettings();
