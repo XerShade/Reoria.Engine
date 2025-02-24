@@ -4,6 +4,13 @@ using Microsoft.Xna.Framework.Input;
 using Reoria.Engine.MonoGame.Interfaces;
 using Reoria.Engine.StateMachines.Interfaces;
 using XnaGameBase = Microsoft.Xna.Framework.Game;
+#region System.Windows.Forms Compaitbility
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
+#endregion
+#region System.Drawing Compatibility
+using Color = Microsoft.Xna.Framework.Color;
+#endregion
 
 namespace Reoria.Engine.MonoGame;
 
