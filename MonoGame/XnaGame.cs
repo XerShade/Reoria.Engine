@@ -10,15 +10,20 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 #endregion
 #region System.Drawing Compatibility
 using Color = Microsoft.Xna.Framework.Color;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 #endregion
 
 namespace Reoria.Engine.MonoGame;
 
 public abstract class XnaGame : XnaGameBase, IXnaGame
 {
-    protected readonly GraphicsDeviceManager Graphics;
+    protected readonly GraphicsDeviceManager graphics;
+    protected readonly ILogger<IXnaGame> logger;
+    protected readonly IConfiguration configuration;
     protected readonly IStateMachine stateMachine;
-    protected SpriteBatch? SpriteBatch;
+    protected SpriteBatch? spriteBatch;
 
     protected double fixedTimeStep;
     protected double fixedTimeAccumulator = 0.0;
@@ -28,20 +33,22 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
     protected int maxFixedUpdatesPerFrame;
     protected bool useVSync;
 
-    public XnaGame(IStateMachine stateMachine)
+    public XnaGame(IServiceProvider serviceProvider)
     {
-        this.Graphics = new GraphicsDeviceManager(this)
+        this.logger = serviceProvider.GetRequiredService<ILogger<IXnaGame>>();
+        this.configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        this.stateMachine = serviceProvider.GetRequiredService<IStateMachine>();
+
+        this.graphics = new GraphicsDeviceManager(this)
         {
             PreferredBackBufferWidth = 1280,
             PreferredBackBufferHeight = 720
         };
 
         this.Content.RootDirectory = "Assets";
-        this.IsMouseVisible = true;
 
         this.LoadPerformanceSettings();
         this.ApplyPerformanceSettings();
-        this.stateMachine = stateMachine;
     }
 
     protected virtual void LoadPerformanceSettings()
@@ -62,11 +69,12 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
 
     protected virtual void ApplyPerformanceSettings()
     {
-        this.Graphics.SynchronizeWithVerticalRetrace = this.useVSync;
+        this.graphics.SynchronizeWithVerticalRetrace = this.useVSync;
         this.IsFixedTimeStep = false;
+        this.IsMouseVisible = true;
 
         this.targetElapsedTime = this.useVSync ? TimeSpan.Zero : TimeSpan.FromSeconds(1.0 / this.maxFPS);
-        this.Graphics.ApplyChanges();
+        this.graphics.ApplyChanges();
     }
 
     public virtual IXnaGame ChangeState<TState>() where TState : class, IState, new()
@@ -77,7 +85,7 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
 
     protected override void Initialize()
     {
-        this.SpriteBatch = new SpriteBatch(this.GraphicsDevice);
+        this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
         base.Initialize();
     }
 

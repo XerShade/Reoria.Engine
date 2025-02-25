@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Reoria.Engine.Base.Common;
 using Reoria.Engine.MonoGame.Interfaces;
@@ -11,6 +13,7 @@ public class XnaGameServer : Disposable, IXnaGame
 {
     protected readonly GameServiceContainer services;
     protected readonly ILogger<IXnaGame> logger;
+    protected readonly IConfiguration configuration;
     protected readonly IStateMachine stateMachine;
     protected readonly Stopwatch stopwatch;
 
@@ -22,10 +25,12 @@ public class XnaGameServer : Disposable, IXnaGame
 
     public GameServiceContainer Services => this.services;
 
-    public XnaGameServer(ILogger<IXnaGame> logger, IStateMachine stateMachine)
+    public XnaGameServer(IServiceProvider serviceProvider)
     {
-        this.logger = logger;
-        this.stateMachine = stateMachine;
+        this.logger = serviceProvider.GetRequiredService<ILogger<IXnaGame>>();
+        this.configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        this.stateMachine = serviceProvider.GetRequiredService<IStateMachine>();
+
         this.services = new GameServiceContainer();
         this.stopwatch = new Stopwatch();
         this.isRunning = false;
