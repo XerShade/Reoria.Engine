@@ -140,7 +140,7 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
     {
         this.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        this.stateMachine.Draw(gameTime);
+        this.stateMachine.Draw(gameTime, this.spriteBatch ?? throw new NullReferenceException(), this.Content);
 
         base.Draw(gameTime);
     }
