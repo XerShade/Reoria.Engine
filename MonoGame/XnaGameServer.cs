@@ -25,6 +25,7 @@ public class XnaGameServer : Disposable, IXnaGame
 
     public IGameStateMachine StateMachine => this.stateMachine;
     public GameServiceContainer Services => this.services;
+    public Vector2 GetWindowSize() => new(0, 0);
 
     public XnaGameServer(IServiceProvider serviceProvider)
     {

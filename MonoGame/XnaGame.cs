@@ -34,6 +34,7 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
     protected bool useVSync;
 
     public IGameStateMachine StateMachine => this.stateMachine;
+    public Vector2 GetWindowSize() => new(this.Window.ClientBounds.Width, this.Window.ClientBounds.Height);
 
     public XnaGame(IServiceProvider serviceProvider)
     {
