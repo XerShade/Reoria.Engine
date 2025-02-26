@@ -50,7 +50,7 @@ public class Camera2D : ICamera2D
     {
         if(this.GraphicsDevice is null)
         {
-            throw new NullReferenceException(nameof(this.GraphicsDevice));
+            return;
         }
 
         int viewportWidth = this.GraphicsDevice.Viewport.Width;
