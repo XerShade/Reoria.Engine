@@ -4,8 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Reoria.Engine.Base.Common;
 using Reoria.Engine.MonoGame.Interfaces;
-using Reoria.Engine.StateMachines.Interfaces;
-using Reoria.Game.StateMachines.GameStates.Interfaces;
+using Reoria.Engine.StateMachines.GameStates.Interfaces;
 using System.Diagnostics;
 
 namespace Reoria.Engine.MonoGame;

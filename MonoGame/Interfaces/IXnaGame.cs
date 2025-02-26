@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Reoria.Engine.StateMachines.Interfaces;
-using Reoria.Game.StateMachines.GameStates.Interfaces;
+using Reoria.Engine.StateMachines.GameStates.Interfaces;
 
 namespace Reoria.Engine.MonoGame.Interfaces;
 

@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Reoria.Engine.MonoGame.Interfaces;
-using Reoria.Engine.StateMachines.Interfaces;
 using XnaGameBase = Microsoft.Xna.Framework.Game;
 #region System.Windows.Forms Compaitbility
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
@@ -13,7 +12,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Reoria.Game.StateMachines.GameStates.Interfaces;
+using Reoria.Engine.StateMachines.GameStates.Interfaces;
 #endregion
 
 namespace Reoria.Engine.MonoGame;
