@@ -140,7 +140,16 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
     {
         this.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        this.stateMachine.Draw(gameTime, this.spriteBatch ?? throw new NullReferenceException(), this.Content);
+        if(this.spriteBatch != null)
+        {
+            this.spriteBatch.Begin(
+                samplerState: SamplerState.PointClamp,
+                sortMode: SpriteSortMode.FrontToBack);
+
+            this.stateMachine.Draw(gameTime, this.spriteBatch, this.Content);
+
+            this.spriteBatch.End();
+        }
 
         base.Draw(gameTime);
     }
