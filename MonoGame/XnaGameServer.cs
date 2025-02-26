@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Reoria.Engine.Base.Common;
+using Reoria.Engine.MonoGame.Camera.Interfaces;
 using Reoria.Engine.MonoGame.Interfaces;
 using Reoria.Engine.StateMachines.GameStates.Interfaces;
 using System.Diagnostics;
@@ -26,6 +27,7 @@ public class XnaGameServer : Disposable, IXnaGame
     public IGameStateMachine StateMachine => this.stateMachine;
     public GameServiceContainer Services => this.services;
     public Vector2 GetWindowSize() => new(0, 0);
+    public ICamera2D GetCamera() => null;
 
     public XnaGameServer(IServiceProvider serviceProvider)
     {

@@ -13,6 +13,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logging\EngineLoggingInitalizer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\Interfaces\IEngineLoggingInitalizer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\SerilogLoggingInitalizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Camera\Camera2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Camera\Interfaces\ICamera2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Interfaces\IXnaGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\XnaGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\XnaGameServer.cs" />
