@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Reoria.Engine.StateMachines.GameStates.Interfaces;
 using Reoria.Engine.StateMachines.Interfaces;
 
 namespace Reoria.Engine.StateMachines.GameStates.States;
@@ -18,6 +19,12 @@ public abstract class GameState : IGameState
     /// This provides access to transition between states.
     /// </summary>
     public virtual IStateMachine? StateMachine { get; set; }
+
+    /// <summary>
+    /// Gets or sets the game state machine that this state belongs to. 
+    /// This provides access to transition between states and other game specific functions.
+    /// </summary>
+    public virtual IGameStateMachine? GameStateMachine { get => this.StateMachine as IGameStateMachine; set => this.StateMachine = value as IStateMachine; }
 
     /// <summary>
     /// Method called when the state is entered. This method is usually used to 

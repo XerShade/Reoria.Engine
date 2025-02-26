@@ -1,4 +1,5 @@
-﻿using Reoria.Engine.StateMachines.Interfaces;
+﻿using Reoria.Engine.StateMachines.GameStates.Interfaces;
+using Reoria.Engine.StateMachines.Interfaces;
 
 namespace Reoria.Engine.StateMachines.GameStates.States;
 
@@ -9,6 +10,5 @@ namespace Reoria.Engine.StateMachines.GameStates.States;
 /// </summary>
 public interface IGameState : IState
 {
-    // This interface acts as a marker to define a state that has specific game-related behavior.
-    // It can be used to implement methods for entering, exiting, updating, and rendering game states.
+    IGameStateMachine? GameStateMachine { get; set; }
 }
