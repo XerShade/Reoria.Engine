@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Reoria.Engine.Base.Common;
 using Reoria.Engine.MonoGame.Interfaces;
 using Reoria.Engine.StateMachines.Interfaces;
+using Reoria.Game.StateMachines.GameStates.Interfaces;
 using System.Diagnostics;
 
 namespace Reoria.Engine.MonoGame;
@@ -14,7 +15,7 @@ public class XnaGameServer : Disposable, IXnaGame
     protected readonly GameServiceContainer services;
     protected readonly ILogger<IXnaGame> logger;
     protected readonly IConfiguration configuration;
-    protected readonly IStateMachine stateMachine;
+    protected readonly IGameStateMachine stateMachine;
     protected readonly Stopwatch stopwatch;
 
     protected double fixedTimeStep;
@@ -23,17 +24,20 @@ public class XnaGameServer : Disposable, IXnaGame
     private bool tickGameLoop;
     private bool isRunning;
 
+    public IGameStateMachine StateMachine => this.stateMachine;
     public GameServiceContainer Services => this.services;
 
     public XnaGameServer(IServiceProvider serviceProvider)
     {
         this.logger = serviceProvider.GetRequiredService<ILogger<IXnaGame>>();
         this.configuration = serviceProvider.GetRequiredService<IConfiguration>();
-        this.stateMachine = serviceProvider.GetRequiredService<IStateMachine>();
+        this.stateMachine = serviceProvider.GetRequiredService<IGameStateMachine>();
 
         this.services = new GameServiceContainer();
         this.stopwatch = new Stopwatch();
         this.isRunning = false;
+
+        this.stateMachine.AttachToWindow(this);
 
         this.LoadPerformanceSettings();
     }
@@ -48,12 +52,6 @@ public class XnaGameServer : Disposable, IXnaGame
     {
         this.fixedTimeStep = 1.0 / Math.Clamp(fixedUpdateRate, 1, 240);
         this.maxFixedUpdatesPerFrame = Math.Clamp(maxFixedSteps, 1, 10);
-    }
-
-    public virtual IXnaGame ChangeState<TState>() where TState : class, IState, new()
-    {
-        this.stateMachine.ChangeState<TState>();
-        return this;
     }
 
     public void Run()

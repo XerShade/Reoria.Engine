@@ -13,6 +13,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Reoria.Game.StateMachines.GameStates.Interfaces;
 #endregion
 
 namespace Reoria.Engine.MonoGame;
@@ -22,7 +23,7 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
     protected readonly GraphicsDeviceManager graphics;
     protected readonly ILogger<IXnaGame> logger;
     protected readonly IConfiguration configuration;
-    protected readonly IStateMachine stateMachine;
+    protected readonly IGameStateMachine stateMachine;
     protected SpriteBatch? spriteBatch;
 
     protected double fixedTimeStep;
@@ -33,11 +34,13 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
     protected int maxFixedUpdatesPerFrame;
     protected bool useVSync;
 
+    public IGameStateMachine StateMachine => this.stateMachine;
+
     public XnaGame(IServiceProvider serviceProvider)
     {
         this.logger = serviceProvider.GetRequiredService<ILogger<IXnaGame>>();
         this.configuration = serviceProvider.GetRequiredService<IConfiguration>();
-        this.stateMachine = serviceProvider.GetRequiredService<IStateMachine>();
+        this.stateMachine = serviceProvider.GetRequiredService<IGameStateMachine>();
 
         this.graphics = new GraphicsDeviceManager(this)
         {
@@ -46,6 +49,8 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
         };
 
         this.Content.RootDirectory = "Assets";
+
+        this.stateMachine.AttachToWindow(this);
 
         this.LoadPerformanceSettings();
         this.ApplyPerformanceSettings();
@@ -75,12 +80,6 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
 
         this.targetElapsedTime = this.useVSync ? TimeSpan.Zero : TimeSpan.FromSeconds(1.0 / this.maxFPS);
         this.graphics.ApplyChanges();
-    }
-
-    public virtual IXnaGame ChangeState<TState>() where TState : class, IState, new()
-    {
-        this.stateMachine.ChangeState<TState>();
-        return this;
     }
 
     protected override void Initialize()
