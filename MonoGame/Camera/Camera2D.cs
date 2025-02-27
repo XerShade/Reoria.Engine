@@ -29,9 +29,13 @@ public class Camera2D : ICamera2D
 
     public virtual void Update()
     {
-        this.Transform = Matrix.CreateTranslation(-this.Position.X, -this.Position.Y, 0) *
-                         Matrix.CreateScale(this.Scale, this.Scale, 1) *
-                         Matrix.CreateTranslation(this.Viewport.Width / 2f, this.Viewport.Height / 2f, 0);
+        if(this.GraphicsDevice != null)
+        {
+            this.Transform = 
+                Matrix.CreateTranslation(-this.Position.X, -this.Position.Y, 0) *
+                Matrix.CreateScale(this.Scale, this.Scale, 1) *
+                Matrix.CreateTranslation(this.GraphicsDevice.Viewport.Width / 2f, this.GraphicsDevice.Viewport.Height / 2f, 0);
+        }
     }
 
     public virtual void SetTargetScale(int scaleFactor)
@@ -69,8 +73,8 @@ public class Camera2D : ICamera2D
         int scaledWidth = (int)(viewportWidth / this.Scale);
         int scaledHeight = (int)(viewportHeight / this.Scale);
 
-        float offsetX = (viewportWidth - (scaledWidth * this.Scale)) / 2f;
-        float offsetY = (viewportHeight - (scaledHeight * this.Scale)) / 2f;
+        int offsetX = (viewportWidth - (scaledWidth * (int)this.Scale)) / 2;
+        int offsetY = (viewportHeight - (scaledHeight * (int)this.Scale)) / 2;
 
         this.Viewport = new Rectangle((int)offsetX, (int)offsetY, scaledWidth, scaledHeight);
         this.Update();

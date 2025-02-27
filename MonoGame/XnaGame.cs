@@ -122,11 +122,11 @@ public abstract class XnaGame : XnaGameBase, IXnaGame
         {
             this.camera.Move(new(1, 0));
         }
-        if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
+        if (Keyboard.GetState().IsKeyDown(Keys.PageDown))
         {
             this.camera.SetTargetScale(1);
         }
-        if (Keyboard.GetState().IsKeyDown(Keys.Add))
+        if (Keyboard.GetState().IsKeyDown(Keys.PageUp))
         {
             this.camera.SetTargetScale(2);
         }
