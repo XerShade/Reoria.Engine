@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Reoria.Engine.Base.Common;
 using Reoria.Engine.Base.Events.Interfaces;
+using System.Collections.Concurrent;
 
 namespace Reoria.Engine.Base.Events;
 
@@ -25,7 +26,7 @@ public class EventBus : Disposable, IEventBus
     /// A dictionary that holds event handlers, mapped by their event type.
     /// The key is the type of the event, and the value is a list of delegates (handlers) for that event type.
     /// </summary>
-    protected readonly Dictionary<Type, List<Delegate>> eventHandlers;
+    protected readonly ConcurrentDictionary<Type, List<Delegate>> eventHandlers;
 
     /// <summary>
     /// Logger used to log events, errors, and other relevant information.
@@ -65,7 +66,7 @@ public class EventBus : Disposable, IEventBus
             foreach (Type? key in this.eventHandlers.Keys.ToList())
             {
                 this.eventHandlers[key].Clear();
-                _ = this.eventHandlers.Remove(key);
+                _ = this.eventHandlers.TryRemove(key, out _);
             }
             this.eventHandlers.Clear();
         }
@@ -122,7 +123,7 @@ public class EventBus : Disposable, IEventBus
                 // If no handlers remain for the event, remove the event type from the handlers dictionary
                 if (this.eventHandlers[typeof(TEvent)].Count <= 0)
                 {
-                    _ = this.eventHandlers.Remove(typeof(TEvent));
+                    _ = this.eventHandlers.TryRemove(typeof(TEvent), out _);
                 }
             }
         }
