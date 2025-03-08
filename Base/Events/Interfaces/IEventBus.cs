@@ -29,4 +29,12 @@ public interface IEventBus : IDisposable, IAsyncDisposable
     /// <typeparam name="TEvent">The type of the event to emit.</typeparam>
     /// <param name="event">The event instance to pass to the handlers.</param>
     void Emit<TEvent>(TEvent @event);
+
+    /// <summary>
+    /// Emits an event of type <typeparamref name="TEvent"/>.
+    /// All connected handlers for this event type will be invoked.
+    /// </summary>
+    /// <typeparam name="TEvent">The type of the event to emit.</typeparam>
+    /// <param name="parameters">The parameters to pass to the handlers.</param>
+    void Emit<TEvent>(params object[] parameters);
 }

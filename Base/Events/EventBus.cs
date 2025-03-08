@@ -150,4 +150,34 @@ public class EventBus : Disposable, IEventBus
             }
         }
     }
+
+    /// <summary>
+    /// Emits an event of type <typeparamref name="TEvent"/>.
+    /// All connected handlers for this event will be invoked.
+    /// </summary>
+    /// <typeparam name="TEvent">The type of the event to emit.</typeparam>
+    /// <param name="parameters">The parameters to pass to the handlers.</param>
+    public void Emit<TEvent>(params object[] parameters)
+    {
+        lock (this.@lock)
+        {
+            // If there are handlers for this event type
+            if (this.eventHandlers.ContainsKey(typeof(TEvent)))
+            {
+                // Create an event instance using the parameters provided.
+                TEvent? @event = (TEvent?)Activator.CreateInstance(typeof(TEvent), parameters);
+
+                // Verify that an event instance was created.
+                if(@event != null)
+                {
+                    // Invoke each handler for the event
+                    foreach (Delegate handler in this.eventHandlers[typeof(TEvent)])
+                    {
+
+                        ((Action<TEvent>)handler)?.Invoke(@event);
+                    }
+                }
+            }
+        }
+    }
 }
