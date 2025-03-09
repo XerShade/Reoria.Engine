@@ -156,7 +156,7 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
                             method.GetParameters()[0].ParameterType == typeof(IServiceCollection))
                         {
                             // Invoke the method to add services to the container.
-                            logger.LogDebug("Invoking tagged RegisterServices method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
+                            logger.LogDebug("Invoking tagged registration method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
                             _ = method.Invoke(null, [this.Services]);
                         }
                     }
@@ -204,7 +204,7 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
                             method.GetParameters()[0].ParameterType == typeof(IServiceProvider))
                         {
                             // Invoke the method to configure services in the container.
-                            logger.LogDebug("Invoking tagged ConfigureServices method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
+                            logger.LogDebug("Invoking tagged configuration method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
                             _ = method.Invoke(null, [this.Provider]);
                         }
                     }
