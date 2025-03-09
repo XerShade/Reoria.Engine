@@ -18,10 +18,10 @@ public interface IEngineServiceContainer : IDisposable, IAsyncDisposable
     ServiceCollection Services { get; }
 
     /// <summary>
-    /// Adds services to the container by calling the <see cref="IEngineServiceLoader.AddServices"/> method for each discovered loader.
+    /// Registers services with the container by calling any static methods tagged with the <see cref="ServiceAttribute.RegisterServicesAttribute"/> attribute in the service.
     /// </summary>
     /// <returns>The current instance of the <see cref="IEngineServiceContainer"/> to allow method chaining.</returns>
-    IEngineServiceContainer AddServices();
+    IEngineServiceContainer RegisterServices();
     /// <summary>
     /// Builds the <see cref="ServiceProvider"/> from the registered services. Once this method is called, no more services can be added to the container.
     /// </summary>
@@ -29,14 +29,13 @@ public interface IEngineServiceContainer : IDisposable, IAsyncDisposable
     /// <exception cref="InvalidOperationException">Thrown if the service collection is empty when attempting to build the provider.</exception>
     IEngineServiceContainer BuildServiceProvider();
     /// <summary>
-    /// Configures services in the container by calling the <see cref="IEngineServiceLoader.ConfigureServices"/> method for each discovered loader.
-    /// This method is typically called after services have been added to the container.
+    /// Configures any services registerd with the container by calling any static methods tagged with the <see cref="ServiceAttribute.ConfigureServicesAttribute"/> attribute in the service.
     /// </summary>
     /// <returns>The current instance of the <see cref="IEngineServiceContainer"/> to allow method chaining.</returns>
     IEngineServiceContainer ConfigureServices();
     /// <summary>
-    /// Finds and loads all available <see cref="IEngineServiceLoader"/> implementations from the assemblies in the current application domain.
+    /// Discovers all service classes that have been tagged with the <see cref="ServiceAttribute"/> attribute.
     /// </summary>
     /// <returns>The current instance of the <see cref="IEngineServiceContainer"/> to allow method chaining.</returns>
-    IEngineServiceContainer FindServiceLoaders();
+    IEngineServiceContainer DiscoverServices();
 }

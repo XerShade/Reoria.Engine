@@ -23,10 +23,10 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
     /// </summary>
     protected readonly IConfiguration configuration;
     /// <summary>
-    /// A collection of <see cref="IEngineServiceLoader"/> instances that are responsible for adding and configuring services.
-    /// These loaders are discovered dynamically from assemblies and used to populate the container with services.
+    /// A collection of <see cref="Type"/>s that have been discovered by the engine as services to be registered and configured.
     /// </summary>
-    protected readonly List<IEngineServiceLoader> loaders;
+    /// <remarks>These services are discovered dynamically from assemblies that have classes that been tagged with the <see cref="ServiceAttribute"/> attribute.</remarks>
+    protected readonly List<Type> serviceTypes;
 
     /// <summary>
     /// The collection of services registered within the container.
@@ -55,8 +55,8 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
             // Store the provided configuration
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration), "Configuration cannot be null.");
 
-            // Initialize the loaders list
-            this.loaders = [];
+            // Initialize the service type collection.
+            this.serviceTypes = [];
 
             // Log the start of the service container construction
             this.logger.LogInformation("Constructing the service container.");
@@ -90,49 +90,34 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
     }
 
     /// <summary>
-    /// Finds and loads all available <see cref="IEngineServiceLoader"/> implementations from the assemblies in the current application domain.
+    /// Discovers all service classes that have been tagged with the <see cref="ServiceAttribute"/> attribute.
     /// </summary>
     /// <returns>The current instance of the <see cref="IEngineServiceContainer"/> to allow method chaining.</returns>
-    public virtual IEngineServiceContainer FindServiceLoaders()
+    public virtual IEngineServiceContainer DiscoverServices()
     {
         // Ensure thread-safe operation by acquiring the lock.
         lock (this.@lock)
         {
             try
             {
-                // Get all assemblies loaded in the current application domain
+                // Get all assemblies loaded in the current application domain.
                 Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                this.logger.LogInformation("Finding service loaders in available assemblies.");
+                List<Type> serviceTypes = this.GetServiceAttributedClasses().ToList();
 
-                // Find all types that implement IEngineServiceLoader and are not abstract or interfaces
-                List<Type> serviceTypes = assemblies
-                    .SelectMany(a => a.GetTypes())
-                    .Where(t => typeof(IEngineServiceLoader).IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
-                    .ToList();
+                // Log the number of services found and the number of assemblies scanned.
+                this.logger.LogInformation("Found {ServiceCount} services across {AssemblyCount} assemblies.", serviceTypes.Count, assemblies.Length);
 
-                // Log the number of loaders found and the number of assemblies scanned
-                this.logger.LogInformation("Found {ServiceLoaderCount} service loaders across {AssemblyCount} assemblies.", serviceTypes.Count, assemblies.Length);
-
-                // Instantiate and add service loaders to the container
+                // Register service types with the container.
                 foreach (Type serviceType in serviceTypes)
                 {
-                    if (Activator.CreateInstance(serviceType) is IEngineServiceLoader instance)
-                    {
-                        // Add the loaded service loader to the list of loaders
-                        this.loaders.Add(instance);
-                        this.logger.LogDebug("Added service loader '{LoaderType}' to the service container.", instance.GetType().FullName);
-                    }
-                    else
-                    {
-                        // Log a warning if an instance could not be created
-                        this.logger.LogWarning("Failed to create an instance of service loader '{LoaderType}'.", serviceType.FullName);
-                    }
+                    this.serviceTypes.Add(serviceType);
+                    this.logger.LogDebug("Registered service '{ServiceType}' with the service container.", serviceType.FullName);
                 }
             }
             catch (Exception ex)
             {
                 // Log and rethrow any errors encountered
-                this.logger.LogError(ex, "An error occurred while finding service loaders.");
+                this.logger.LogError(ex, "An error occurred while discovering services.");
                 throw;
             }
         }
@@ -142,29 +127,39 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
     }
 
     /// <summary>
-    /// Adds services to the container by calling the <see cref="IEngineServiceLoader.AddServices"/> method for each discovered loader.
+    /// Registers services with the container by calling any static methods tagged with the <see cref="ServiceAttribute.RegisterServicesAttribute"/> attribute in the service.
     /// </summary>
     /// <returns>The current instance of the <see cref="IEngineServiceContainer"/> to allow method chaining.</returns>
-    public virtual IEngineServiceContainer AddServices()
+    public virtual IEngineServiceContainer RegisterServices()
     {
         // Ensure thread-safe operation by acquiring the lock.
         lock (this.@lock)
         {
             try
             {
-                // If no loaders are available, log a warning and return early
-                if (this.loaders.Count == 0)
+                // If no services are available, log a warning and return early
+                if (this.serviceTypes.Count == 0)
                 {
-                    this.logger.LogWarning("No service loaders available to add services.");
+                    this.logger.LogWarning("No services have been discovered by the engine.");
                     return this;
                 }
 
-                // Iterate over all service loaders and use them to add services to the container
-                foreach (IEngineServiceLoader serviceLoader in this.loaders)
+                // Iterate over all registered services and add them to the container.
+                foreach (Type serviceType in this.serviceTypes)
                 {
-                    serviceLoader.AddServices(this.Services);
-                    // Log the addition of services via the specific loader
-                    this.logger.LogDebug("Added services using service loader '{LoaderType}'.", serviceLoader.GetType().FullName);
+                    // Iterate over all static methods tagged with ServiceAttribute.RegisterServicesAttribute.
+                    foreach (MethodInfo method in serviceType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                    {
+                        // Validate the parameters of the method.
+                        if (method.GetCustomAttribute<ServiceAttribute.RegisterServicesAttribute>() != null &&
+                            method.GetParameters().Length == 1 &&
+                            method.GetParameters()[0].ParameterType == typeof(IServiceCollection))
+                        {
+                            // Invoke the method to add services to the container.
+                            logger.LogDebug("Invoking tagged RegisterServices method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
+                            _ = method.Invoke(null, [this.Services]);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -180,8 +175,7 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
     }
 
     /// <summary>
-    /// Configures services in the container by calling the <see cref="IEngineServiceLoader.ConfigureServices"/> method for each discovered loader.
-    /// This method is typically called after services have been added to the container.
+    /// Configures any services registerd with the container by calling any static methods tagged with the <see cref="ServiceAttribute.ConfigureServicesAttribute"/> attribute in the service.
     /// </summary>
     /// <returns>The current instance of the <see cref="IEngineServiceContainer"/> to allow method chaining.</returns>
     public virtual IEngineServiceContainer ConfigureServices()
@@ -191,19 +185,29 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
         {
             try
             {
-                // If no loaders are available, log a warning and return early
-                if (this.loaders.Count == 0)
+                // If no services are available, log a warning and return early
+                if (this.serviceTypes.Count == 0)
                 {
-                    this.logger.LogWarning("No service loaders available to configure services.");
+                    this.logger.LogWarning("No services have been discovered by the engine.");
                     return this;
                 }
 
-                // Iterate over all service loaders and use them to configure services
-                foreach (IEngineServiceLoader serviceLoader in this.loaders)
+                // Iterate over all registered services and add them to the container.
+                foreach (Type serviceType in this.serviceTypes)
                 {
-                    serviceLoader.ConfigureServices(this.Provider);
-                    // Log the configuration of services via the specific loader
-                    this.logger.LogDebug("Configured services using service loader '{LoaderType}'.", serviceLoader.GetType().FullName);
+                    // Iterate over all static methods tagged with ServiceAttribute.ConfigureServicesAttribute.
+                    foreach (MethodInfo method in serviceType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                    {
+                        // Validate the parameters of the method.
+                        if (method.GetCustomAttribute<ServiceAttribute.ConfigureServicesAttribute>() != null &&
+                            method.GetParameters().Length == 1 &&
+                            method.GetParameters()[0].ParameterType == typeof(IServiceProvider))
+                        {
+                            // Invoke the method to configure services in the container.
+                            logger.LogDebug("Invoking tagged ConfigureServices method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
+                            _ = method.Invoke(null, [this.Provider]);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -252,5 +256,18 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
 
         // Return the current instance to support method chaining
         return this;
+    }
+
+    /// <summary>
+    /// Finds all types in loaded assemblies that are decorated with [ServiceAttribute].
+    /// </summary>
+    private IEnumerable<Type> GetServiceAttributedClasses()
+    {
+        // Find all of the types that are tagged with ServiceAttribute across available assemblies.
+        this.logger.LogInformation("Finding service loaders in available assemblies.");
+        return AppDomain.CurrentDomain
+            .GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type => type.GetCustomAttribute<ServiceAttribute>() != null);
     }
 }
