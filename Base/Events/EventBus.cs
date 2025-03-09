@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Reoria.Engine.Base.Common;
 using Reoria.Engine.Base.Events.Interfaces;
 using System.Collections.Concurrent;
+using Service = Reoria.Engine.Services.ServiceAttribute;
 
 namespace Reoria.Engine.Base.Events;
 
@@ -9,6 +11,7 @@ namespace Reoria.Engine.Base.Events;
 /// EventBus is a singleton class that handles the subscription and emission of events.
 /// It allows clients to connect handlers to specific event types and emit events to trigger those handlers.
 /// </summary>
+[@Service]
 public class EventBus : Disposable, IEventBus
 {
     #region Event Bus: Singleton Pattern
@@ -20,6 +23,15 @@ public class EventBus : Disposable, IEventBus
     /// Gets the single instance of the EventBus. If not yet created, throws a NullReferenceException.
     /// </summary>
     public static IEventBus Instance => EventBus.instance ?? throw new NullReferenceException("Event bus has not been created by the dependency injection container yet.");
+    #endregion
+
+    #region Event Bus: Service Definitions
+    /// <summary>
+    /// Registers the event bus service and dependencies with the provided service collection.
+    /// </summary>
+    /// <param name="services">The service collection to register the event bus services with.</param>
+    [@Service.RegisterServices]
+    protected static void RegisterServices(IServiceCollection services) => _ = services.AddSingleton<IEventBus, EventBus>();
     #endregion
 
     /// <summary>
