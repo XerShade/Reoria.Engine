@@ -39,7 +39,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\SaltGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\EngineServiceContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ServiceAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateMachines\Interfaces\IState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateMachines\Interfaces\IStateMachine.cs" />
