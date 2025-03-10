@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+#region System.Drawing Compatibility
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+#endregion
 
 namespace Reoria.Engine.MonoGame.Camera.Interfaces;
 

@@ -9,6 +9,7 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 #endregion
 #region System.Drawing Compatibility
 using Color = Microsoft.Xna.Framework.Color;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
