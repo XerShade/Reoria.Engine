@@ -41,9 +41,8 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
     /// Initializes a new instance of the <see cref="EngineServiceContainer"/> class with the provided logger factory and configuration.
     /// </summary>
     /// <param name="loggerFactory">The logger factory used to create loggers.</param>
-    /// <param name="configuration">The configuration used to configure services.</param>
     /// <exception cref="ArgumentNullException">Thrown when either <paramref name="loggerFactory"/> or <paramref name="configuration"/> is null.</exception>
-    public EngineServiceContainer(ILoggerFactory loggerFactory, IConfiguration configuration)
+    public EngineServiceContainer(ILoggerFactory loggerFactory)
     {
         // Ensure thread-safe initialization by acquiring the lock.
         lock (this.@lock)
@@ -53,7 +52,7 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
                 ?? throw new ArgumentNullException(nameof(loggerFactory), "LoggerFactory cannot be null.");
 
             // Store the provided configuration
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration), "Configuration cannot be null.");
+            this.configuration = this.DiscoverConfigurationFiles().Build();
 
             // Initialize the service type collection.
             this.serviceTypes = [];
@@ -86,6 +85,50 @@ public class EngineServiceContainer : Disposable, IEngineServiceContainer
                 this.logger.LogError(ex, "An error occurred during service container initialization.");
                 throw;
             }
+        }
+    }
+
+    protected IConfigurationBuilder DiscoverConfigurationFiles()
+    {
+        // Ensure thread-safe operation by acquiring the lock.
+        lock (this.@lock)
+        {
+            // Create a new configuration builder instance.
+            IConfigurationBuilder builder = new ConfigurationBuilder();
+
+            try
+            {
+                // Get all assemblies loaded in the current application domain.
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                List<Type> serviceTypes = this.GetServiceAttributedClasses().ToList();
+
+                // Iterate over all registered services and add them to the container.
+                foreach (Type serviceType in serviceTypes)
+                {
+                    // Iterate over all static methods tagged with ServiceAttribute.RegisterConfigurationFiles.
+                    foreach (MethodInfo method in serviceType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                    {
+                        // Validate the parameters of the method.
+                        if (method.GetCustomAttribute<ServiceAttribute.RegisterConfigurationFiles>() != null &&
+                            method.GetParameters().Length == 1 &&
+                            method.GetParameters()[0].ParameterType == typeof(IConfigurationBuilder))
+                        {
+                            // Invoke the method to add configuration files to the container.
+                            logger.LogDebug("Invoking tagged configuration file method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
+                            _ = method.Invoke(null, [builder]);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log and rethrow any errors encountered
+                this.logger.LogError(ex, "An error occurred while discovering configuration files.");
+                throw;
+            }
+
+            // Return the configuration builder.
+            return builder;
         }
     }
 

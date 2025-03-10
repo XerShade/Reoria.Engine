@@ -10,6 +10,13 @@ public class ServiceAttribute : Attribute
 {
     /// <summary>
     /// This attribute is used to mark methods within a service class that are responsible
+    /// for registering configuration files into the application's service container.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public class RegisterConfigurationFiles : Attribute { }
+
+    /// <summary>
+    /// This attribute is used to mark methods within a service class that are responsible
     /// for registering additional services into the application's service container.
     /// These methods can be used to configure dependencies and register them for use throughout
     /// the system.
