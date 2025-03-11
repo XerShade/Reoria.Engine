@@ -73,17 +73,19 @@ public class EngineServiceContainer<TLoggingInitalizer> : Disposable, IEngineSer
                 {
                     bool isValidParameters = true;
                     ParameterInfo[] methodParameters = method.GetParameters();
-                    for (int i = 0; i < methodParameters.Length; i++)
+                    for (int i = 0; i < methodParameters.Length && isValidParameters; i++)
                     {
-                        if (methodParameters[i].ParameterType.IsAssignableTo(parameters[i].GetType()))
+                        if (!parameters[i].GetType().IsAssignableTo(methodParameters[i].ParameterType))
                         {
+                            logger.LogWarning("Invalid parameter '{Parameter}' of type '{ParameterType}' in method '{Type}.{Method}'.",
+                                methodParameters[i].Name, methodParameters[i].ParameterType.Name, serviceType.FullName, method.Name);
                             isValidParameters = false;
                         }
                     }
 
                     if(isValidParameters)
                     {
-                        logger.LogDebug("Invoking method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
+                        logger.LogDebug("Invoking method '{Type}.{Method}'.", serviceType.FullName, method.Name);
                         _ = method.Invoke(null, parameters);
                     }
                 }
