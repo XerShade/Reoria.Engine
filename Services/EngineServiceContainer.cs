@@ -53,6 +53,44 @@ public class EngineServiceContainer<TLoggingInitalizer> : Disposable, IEngineSer
         }
     }
 
+    private IEnumerable<Type> GetServiceAttributedClasses()
+    {
+        this.logger.LogInformation("Finding service loaders in available assemblies.");
+        return AppDomain.CurrentDomain
+            .GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type => type.GetCustomAttribute<ServiceAttribute>() != null);
+    }
+
+    protected void ExecuteFunctionsOnServices<TServiceAttribute>(List<Type> serviceTypes, params object[] parameters) where TServiceAttribute : Attribute
+    {
+        foreach (Type serviceType in serviceTypes)
+        {
+            foreach (MethodInfo method in serviceType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (method.GetCustomAttribute<TServiceAttribute>() != null &&
+                    method.GetParameters().Length == parameters.Length)
+                {
+                    bool isValidParameters = true;
+                    ParameterInfo[] methodParameters = method.GetParameters();
+                    for (int i = 0; i < methodParameters.Length; i++)
+                    {
+                        if (methodParameters[i].ParameterType.IsAssignableTo(parameters[i].GetType()))
+                        {
+                            isValidParameters = false;
+                        }
+                    }
+
+                    if(isValidParameters)
+                    {
+                        logger.LogDebug("Invoking method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
+                        _ = method.Invoke(null, parameters);
+                    }
+                }
+            }
+        }
+    }
+
     protected IConfigurationBuilder DiscoverConfigurationFiles()
     {
         lock (this.@lock)
@@ -64,19 +102,7 @@ public class EngineServiceContainer<TLoggingInitalizer> : Disposable, IEngineSer
                 Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 List<Type> serviceTypes = this.GetServiceAttributedClasses().ToList();
 
-                foreach (Type serviceType in serviceTypes)
-                {
-                    foreach (MethodInfo method in serviceType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
-                    {
-                        if (method.GetCustomAttribute<ServiceAttribute.RegisterConfigurationFiles>() != null &&
-                            method.GetParameters().Length == 1 &&
-                            method.GetParameters()[0].ParameterType == typeof(IConfigurationBuilder))
-                        {
-                            logger.LogDebug("Invoking tagged configuration file method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
-                            _ = method.Invoke(null, [builder]);
-                        }
-                    }
-                }
+                this.ExecuteFunctionsOnServices<ServiceAttribute.RegisterConfigurationFiles>(serviceTypes, [builder]);
             }
             catch (Exception ex)
             {
@@ -127,19 +153,7 @@ public class EngineServiceContainer<TLoggingInitalizer> : Disposable, IEngineSer
                     return this;
                 }
 
-                foreach (Type serviceType in this.serviceTypes)
-                {
-                    foreach (MethodInfo method in serviceType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
-                    {
-                        if (method.GetCustomAttribute<ServiceAttribute.RegisterServicesAttribute>() != null &&
-                            method.GetParameters().Length == 1 &&
-                            method.GetParameters()[0].ParameterType == typeof(IServiceCollection))
-                        {
-                            logger.LogDebug("Invoking tagged registration method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
-                            _ = method.Invoke(null, [this.Services]);
-                        }
-                    }
-                }
+                this.ExecuteFunctionsOnServices<ServiceAttribute.RegisterServicesAttribute>(this.serviceTypes, [this.Services]);
             }
             catch (Exception ex)
             {
@@ -163,19 +177,7 @@ public class EngineServiceContainer<TLoggingInitalizer> : Disposable, IEngineSer
                     return this;
                 }
 
-                foreach (Type serviceType in this.serviceTypes)
-                {
-                    foreach (MethodInfo method in serviceType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
-                    {
-                        if (method.GetCustomAttribute<ServiceAttribute.ConfigureServicesAttribute>() != null &&
-                            method.GetParameters().Length == 1 &&
-                            method.GetParameters()[0].ParameterType == typeof(IServiceProvider))
-                        {
-                            logger.LogDebug("Invoking tagged configuration method '{Method}' in '{Type}'.", method.Name, serviceType.FullName);
-                            _ = method.Invoke(null, [this.Provider]);
-                        }
-                    }
-                }
+                this.ExecuteFunctionsOnServices<ServiceAttribute.ConfigureServicesAttribute>(this.serviceTypes, [this.Provider]);
             }
             catch (Exception ex)
             {
@@ -210,14 +212,5 @@ public class EngineServiceContainer<TLoggingInitalizer> : Disposable, IEngineSer
         }
 
         return this;
-    }
-
-    private IEnumerable<Type> GetServiceAttributedClasses()
-    {
-        this.logger.LogInformation("Finding service loaders in available assemblies.");
-        return AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => type.GetCustomAttribute<ServiceAttribute>() != null);
     }
 }
