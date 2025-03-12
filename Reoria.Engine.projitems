@@ -15,11 +15,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Configuration\ContainerConfigurationSources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Container\EngineContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Interfaces\IEngineContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Logging\ContainerLoggingInitializer.cs" />
+    <Compile Include="..\..\libraries\Reoria.Engine\Base\Container\Logging\Interfaces\IContainerLoggingInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Logging\SerilogLoggingInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Events\EventBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Events\Interfaces\IEventBus.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logging\EngineLoggingInitalizer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logging\Interfaces\IEngineLoggingInitalizer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Logging\SerilogLoggingInitalizer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Camera\Camera2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Camera\Interfaces\ICamera2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Interfaces\IXnaGame.cs" />
@@ -42,9 +42,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Interfaces\ISaltGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\SaltGeneratorConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\SaltGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\EngineServiceContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IEngineServiceContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\ServiceAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateMachines\Interfaces\IState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateMachines\Interfaces\IStateMachine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateMachines\StateMachine.cs" />

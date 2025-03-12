@@ -5,13 +5,13 @@ using Reoria.Engine.Base.Common;
 using Reoria.Engine.Base.Container.Attributes;
 using Reoria.Engine.Base.Container.Configuration;
 using Reoria.Engine.Base.Container.Interfaces;
-using Reoria.Engine.Logging.Interfaces;
+using Reoria.Engine.Base.Container.Logging.Interfaces;
 using System.Reflection;
 
 namespace Reoria.Engine.Base.Container;
 
 public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
-    where TLoggingInitalizer : class, IEngineLoggingInitalizer, new()
+    where TLoggingInitalizer : class, IContainerLoggingInitializer, new()
 {
     protected ILogger<IEngineContainer> logger;
     protected IConfiguration configuration;
@@ -23,8 +23,8 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
 
     public EngineContainer()
     {
-        using IEngineLoggingInitalizer loggingInitalizer = Activator.CreateInstance<TLoggingInitalizer>();
-        using ILoggerFactory loggerFactory = loggingInitalizer.Initialize();
+        using IContainerLoggingInitializer loggingInitializer = Activator.CreateInstance<TLoggingInitalizer>();
+        using ILoggerFactory loggerFactory = loggingInitializer.Initialize();
         this.logger = loggerFactory.CreateLogger<IEngineContainer>() ?? throw new NullReferenceException();
         this.logger.LogInformation("Staring game engine container.");
 
@@ -109,6 +109,7 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
         }
 
         this.configuration = builder.Build();
+
         _ = this.services.AddSingleton<IConfiguration>(this.configuration);
 
         this.containerConfigurationSources.Dispose();
@@ -120,4 +121,27 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
 
     protected virtual void OnBuildContainerConfigurationSource(IConfigurationBuilder builder, ContainerConfigurationSource source) =>
         _ = builder.AddJsonFile(source.Path, optional: source.Optional, reloadOnChange: source.ReloadOnChange);
+
+    public virtual IEngineContainer BuildContainerLogger()
+    {
+        this.logger.LogInformation("Building container logger and logger factory.");
+
+        this.logger.LogDebug("Initializing container logging initalizer.");
+        using IContainerLoggingInitializer loggingInitializer = 
+            Activator.CreateInstance(typeof(TLoggingInitalizer), this.configuration) as IContainerLoggingInitializer ??
+            throw new NullReferenceException("Unable to create container logging initializer.");
+
+        this.logger.LogDebug("Initializing container logger factory.");
+        using ILoggerFactory loggerFactory = loggingInitializer.Initialize();
+
+        this.logger.LogDebug("Initializing container logger.");
+        this.logger = loggerFactory.CreateLogger<IEngineContainer>();
+
+        _ = this.services.AddSingleton<ILoggerFactory>(loggerFactory);
+        _ = this.services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
+
+        this.logger.LogInformation("Successfully built container logger and logger factory.");
+
+        return this;
+    }
 }
