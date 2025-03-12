@@ -55,7 +55,7 @@ public class EngineServiceContainer<TLoggingInitalizer> : Disposable, IEngineSer
 
     private IEnumerable<Type> GetServiceAttributedClasses()
     {
-        this.logger.LogInformation("Finding service loaders in available assemblies.");
+        this.logger.LogInformation("Discovering service classes in available assemblies.");
         return AppDomain.CurrentDomain
             .GetAssemblies()
             .SelectMany(assembly => assembly.GetTypes())
@@ -93,6 +93,33 @@ public class EngineServiceContainer<TLoggingInitalizer> : Disposable, IEngineSer
         }
     }
 
+    public virtual IEngineServiceContainer DiscoverServices()
+    {
+        lock (this.@lock)
+        {
+            try
+            {
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                List<Type> serviceTypes = this.GetServiceAttributedClasses().ToList();
+
+                this.logger.LogInformation("Discovered {ServiceCount} service classes across {AssemblyCount} assemblies.", serviceTypes.Count, assemblies.Length);
+
+                foreach (Type serviceType in serviceTypes)
+                {
+                    this.serviceTypes.Add(serviceType);
+                    this.logger.LogDebug("Discovered service class '{ServiceType}', tracking it with the service container.", serviceType.FullName);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "An error occurred while discovering services.");
+                throw;
+            }
+        }
+
+        return this;
+    }
+
     protected IConfigurationBuilder DiscoverConfigurationFiles()
     {
         lock (this.@lock)
@@ -114,33 +141,6 @@ public class EngineServiceContainer<TLoggingInitalizer> : Disposable, IEngineSer
 
             return builder;
         }
-    }
-
-    public virtual IEngineServiceContainer DiscoverServices()
-    {
-        lock (this.@lock)
-        {
-            try
-            {
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                List<Type> serviceTypes = this.GetServiceAttributedClasses().ToList();
-
-                this.logger.LogInformation("Found {ServiceCount} services across {AssemblyCount} assemblies.", serviceTypes.Count, assemblies.Length);
-
-                foreach (Type serviceType in serviceTypes)
-                {
-                    this.serviceTypes.Add(serviceType);
-                    this.logger.LogDebug("Registered service '{ServiceType}' with the service container.", serviceType.FullName);
-                }
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "An error occurred while discovering services.");
-                throw;
-            }
-        }
-
-        return this;
     }
 
     public virtual IEngineServiceContainer RegisterServices()
