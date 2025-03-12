@@ -16,6 +16,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Base\Container\EngineContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Interfaces\IEngineContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Logging\ContainerLoggingInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Services\ContainerServiceDefinition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Services\ContainerServiceDefinitions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Services\Enumerations\ServiceLifetime.cs" />
     <Compile Include="..\..\libraries\Reoria.Engine\Base\Container\Logging\Interfaces\IContainerLoggingInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Logging\SerilogLoggingInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Events\EventBus.cs" />

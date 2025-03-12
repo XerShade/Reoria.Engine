@@ -6,6 +6,7 @@ using Reoria.Engine.Base.Container.Attributes;
 using Reoria.Engine.Base.Container.Configuration;
 using Reoria.Engine.Base.Container.Interfaces;
 using Reoria.Engine.Base.Container.Logging.Interfaces;
+using Reoria.Engine.Base.Container.Services;
 using System.Reflection;
 
 namespace Reoria.Engine.Base.Container;
@@ -20,6 +21,7 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
 
     protected IEnumerable<Type> containerServiceClasses;
     protected ContainerConfigurationSources containerConfigurationSources;
+    protected ContainerServiceDefinitions containerServiceDefinitions;
 
     public EngineContainer()
     {
@@ -34,6 +36,7 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
 
         this.containerServiceClasses = [];
         this.containerConfigurationSources = new(loggerFactory.CreateLogger<ContainerConfigurationSources>());
+        this.containerServiceDefinitions = new(loggerFactory.CreateLogger<ContainerServiceDefinitions>());
     }
 
     public virtual IEngineContainer DiscoverContainerServiceClasses()
@@ -132,7 +135,7 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
             throw new NullReferenceException("Unable to create container logging initializer.");
 
         this.logger.LogDebug("Initializing container logger factory.");
-        using ILoggerFactory loggerFactory = loggingInitializer.Initialize();
+        ILoggerFactory loggerFactory = loggingInitializer.Initialize();
 
         this.logger.LogDebug("Initializing container logger.");
         this.logger = loggerFactory.CreateLogger<IEngineContainer>();
@@ -143,5 +146,72 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
         this.logger.LogInformation("Successfully built container logger and logger factory.");
 
         return this;
+    }
+
+    public virtual IEngineContainer DiscoverContainerServices()
+    {
+        if (!this.containerServiceClasses.Any())
+        {
+            this.logger.LogWarning("No container services have been discovered by the engine.");
+            return this;
+        }
+
+        this.logger.LogInformation("Discovering container service definitions.");
+        this.ExecuteFunctionsOnServices<ContainerAttribute.DiscoverSerivceDefinitions>(this.containerServiceDefinitions);
+        this.logger.LogInformation("Discovered {Count} container service definitions.", this.containerServiceDefinitions.Count());
+
+        return this;
+    }
+
+    public virtual IEngineContainer BuildContainerServices()
+    {
+        if (!this.containerServiceDefinitions.Any())
+        {
+            this.logger.LogWarning("No container service definitions have been discovered by the engine.");
+            return this;
+        }
+
+        this.logger.LogInformation("Resolving container services using service definitions.");
+
+        foreach (ContainerServiceDefinition service in this.containerServiceDefinitions.GetSources())
+        {
+            this.logger.LogDebug("Resolving container serivce '{Service}'.", service.Service.Name);
+            _ = service.Lifetime switch
+            {
+                ServiceLifetime.Singleton => service.Instance is null
+                                        ? this.services.AddSingleton(service.Service, service.Implementation)
+                                        : this.services.AddSingleton(service.Service, service.Instance),
+                ServiceLifetime.Transient => this.services.AddScoped(service.Service, service.Implementation),
+                ServiceLifetime.Scoped => this.services.AddTransient(service.Service, service.Implementation),
+                _ => this.services.AddTransient(service.Service, service.Implementation),
+            };
+        }
+
+        this.containerServiceDefinitions.Dispose();
+
+        this.logger.LogInformation("Successfully resolved container services.");
+
+        return this;
+    }
+
+    public virtual IEngineContainer BuildContainerServiceProvider()
+    {
+        if (!this.containerServiceClasses.Any())
+        {
+            this.logger.LogWarning("No container services have been discovered by the engine.");
+            return this;
+        }
+
+        this.logger.LogInformation("Building container service provider.");
+        this.provider = this.services.BuildServiceProvider();
+        this.ExecuteFunctionsOnServices<ContainerAttribute.BuildServiceProvider>(this.provider);
+
+        return this;
+    }
+
+    public virtual TService RetrieveService<TService>() where TService : class
+    {
+        this.logger.LogInformation("Retrieving service '{Service}' from the container.", typeof(TService).Name);
+        return this.provider.GetRequiredService<TService>();
     }
 }

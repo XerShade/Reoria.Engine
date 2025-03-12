@@ -1,10 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Reoria.Engine.Base.Common;
 using Reoria.Engine.Base.Container.Attributes;
+using Reoria.Engine.Base.Container.Services;
 using Reoria.Engine.Base.Events.Interfaces;
 using System.Collections.Concurrent;
-using Container = Reoria.Engine.Base.Container.Attributes.ContainerAttribute;
 
 namespace Reoria.Engine.Base.Events;
 
@@ -31,8 +30,8 @@ public class EventBus : Disposable, IEventBus
     /// Registers the event bus service and dependencies with the provided service collection.
     /// </summary>
     /// <param name="services">The service collection to register the event bus services with.</param>
-    
-    protected static void RegisterServices(IServiceCollection services) => _ = services.AddSingleton<IEventBus, EventBus>();
+    [ContainerAttribute.DiscoverSerivceDefinitions]
+    protected static void RegisterServices(ContainerServiceDefinitions services) => services.AddSingleton<IEventBus, EventBus>();
     #endregion
 
     /// <summary>
