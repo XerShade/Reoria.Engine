@@ -43,13 +43,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Interfaces\ISaltGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\SaltGeneratorConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\SaltGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StateMachines\Interfaces\IState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StateMachines\Interfaces\IStateMachine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StateMachines\StateMachine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StateMachines\GameStates\GameStateMachine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StateMachines\GameStates\Interfaces\IGameStateMachine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StateMachines\GameStates\States\GameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StateMachines\GameStates\States\Interfaces\IGameState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)appsettings.json">
