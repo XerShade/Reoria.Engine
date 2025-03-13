@@ -26,9 +26,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Base\Events\Interfaces\IEventBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Camera\Camera2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Camera\Interfaces\ICamera2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MonoGame\Interfaces\IXnaGame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MonoGame\XnaGame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MonoGame\XnaGameServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Attributes\ScriptFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptingService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptLoader.cs" />
@@ -58,5 +55,8 @@
     <None Include="$(MSBuildThisFileDirectory)appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)MonoGame\Interfaces\" />
   </ItemGroup>
 </Project>
