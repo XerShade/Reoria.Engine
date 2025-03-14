@@ -1,4 +1,4 @@
-﻿namespace Reoria.Engine.Security.Cryptography.Interfaces;
+﻿namespace Reoria.Engine.Base.Security.Cryptography.Interfaces;
 
 /// <summary>
 /// Interface for generating cryptographic hashes.

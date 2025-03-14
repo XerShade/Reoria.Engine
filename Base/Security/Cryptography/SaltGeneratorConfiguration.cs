@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Reoria.Engine.Security.Cryptography;
+namespace Reoria.Engine.Base.Security.Cryptography;
 
 /// <summary>
 /// Represents the configuration for the salt generator, including parameters like

@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Reoria.Engine.Base.Common;
-using Reoria.Engine.Security.Cryptography.Interfaces;
+using Reoria.Engine.Base.Container.Attributes;
+using Reoria.Engine.Base.Container.Interfaces;
+using Reoria.Engine.Base.Container.Services;
+using Reoria.Engine.Base.Security.Cryptography.Interfaces;
 using System.Security.Cryptography;
 
-namespace Reoria.Engine.Security.Cryptography;
+namespace Reoria.Engine.Base.Security.Cryptography;
 
 /// <summary>
 /// Generates cryptographic salts used for operations such as password hashing.
@@ -13,8 +16,21 @@ namespace Reoria.Engine.Security.Cryptography;
 /// Initializes a new instance of the <see cref="SaltGenerator"/> class using the provided configuration.
 /// </remarks>
 /// <param name="configuration">The <see cref="IConfiguration"/> instance used to retrieve salt generator settings.</param>
+[Container]
 public class SaltGenerator(IConfiguration configuration) : Disposable(), ISaltGenerator
 {
+    #region SaltGenerator: Service Definitions
+    /// <summary>
+    /// This method is called during the service registration phase, typically by <see cref="IEngineContainer"/> 
+    /// when setting up the application's dependency injection container.
+    /// </summary>
+    /// <param name="services">The <see cref="ContainerServiceDefinitions"/> instance used to register services with the container.</param>
+    [ContainerAttribute.DiscoverSerivceDefinitions]
+    public static void DiscoverSerivceDefinitions(ContainerServiceDefinitions services) =>
+        // Register IHashGenerator as a scoped service, meaning an instance will be created every time one is requested.
+        services.AddScoped<ISaltGenerator, SaltGenerator>();
+    #endregion
+
     /// <summary>
     /// The configuration settings for the salt generator, including salt length.
     /// </summary>

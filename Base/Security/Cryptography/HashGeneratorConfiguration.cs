@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Reoria.Engine.Security.Cryptography;
+namespace Reoria.Engine.Base.Security.Cryptography;
 
 /// <summary>
 /// Holds the configuration settings for the hash generator.

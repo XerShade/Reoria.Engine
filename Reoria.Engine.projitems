@@ -31,16 +31,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptingService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptLogging.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Factories\HashGeneratorFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Factories\Interfaces\IHashGeneratorFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Factories\Interfaces\ISaltGeneratorFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Factories\SaltGeneratorFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\HashGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\HashGeneratorConfiguration.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Interfaces\IHashGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\Interfaces\ISaltGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\SaltGeneratorConfiguration.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\SaltGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Factories\HashGeneratorFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Factories\SaltGeneratorFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\HashGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\HashGeneratorConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Interfaces\IHashGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Interfaces\ISaltGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\SaltGeneratorConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\SaltGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)appsettings.json">

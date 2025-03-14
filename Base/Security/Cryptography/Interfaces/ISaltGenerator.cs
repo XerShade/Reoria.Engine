@@ -1,4 +1,4 @@
-﻿namespace Reoria.Engine.Security.Cryptography.Interfaces;
+﻿namespace Reoria.Engine.Base.Security.Cryptography.Interfaces;
 
 /// <summary>
 /// Defines the contract for a salt generator, which is responsible for generating
