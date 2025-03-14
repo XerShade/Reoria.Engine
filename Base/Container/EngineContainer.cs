@@ -12,7 +12,7 @@ using System.Reflection;
 namespace Reoria.Engine.Base.Container;
 
 public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
-    where TLoggingInitalizer : class, IContainerLoggingInitializer, new()
+    where TLoggingInitalizer : class, IContainerLoggingInitializer
 {
     protected ILogger<IEngineContainer> logger;
     protected IConfiguration configuration;
@@ -25,7 +25,7 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
 
     public EngineContainer()
     {
-        using IContainerLoggingInitializer loggingInitializer = Activator.CreateInstance<TLoggingInitalizer>();
+        using IContainerLoggingInitializer loggingInitializer = this.CreateEarlyLoggingInitalizer<TLoggingInitalizer>();
         using ILoggerFactory loggerFactory = loggingInitializer.Initialize();
         this.logger = loggerFactory.CreateLogger<IEngineContainer>() ?? throw new NullReferenceException();
         this.logger.LogInformation("Staring game engine container.");
@@ -38,6 +38,10 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
         this.containerConfigurationSources = new(loggerFactory.CreateLogger<ContainerConfigurationSources>());
         this.containerServiceDefinitions = new(loggerFactory.CreateLogger<ContainerServiceDefinitions>());
     }
+
+    protected virtual IContainerLoggingInitializer CreateEarlyLoggingInitalizer<TInitalizer>()
+        where TInitalizer : class, TLoggingInitalizer => Activator.CreateInstance<TInitalizer>() ??
+            throw new NullReferenceException("Unable to create container logging initializer.");
 
     public virtual IEngineContainer DiscoverContainerServiceClasses()
     {
@@ -130,9 +134,7 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
         this.logger.LogInformation("Building container logger and logger factory.");
 
         this.logger.LogDebug("Initializing container logging initalizer.");
-        using IContainerLoggingInitializer loggingInitializer = 
-            Activator.CreateInstance(typeof(TLoggingInitalizer), this.configuration) as IContainerLoggingInitializer ??
-            throw new NullReferenceException("Unable to create container logging initializer.");
+        using IContainerLoggingInitializer loggingInitializer = this.CreateLoggingInitalizer<TLoggingInitalizer>(this.configuration);
 
         this.logger.LogDebug("Initializing container logger factory.");
         ILoggerFactory loggerFactory = loggingInitializer.Initialize();
@@ -147,6 +149,10 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
 
         return this;
     }
+
+    protected virtual IContainerLoggingInitializer CreateLoggingInitalizer<TInitalizer>(IConfiguration configuration)
+        where TInitalizer : class, TLoggingInitalizer => Activator.CreateInstance(typeof(TInitalizer), configuration) as TInitalizer ??
+            throw new NullReferenceException("Unable to create container logging initializer.");
 
     public virtual IEngineContainer DiscoverContainerServices()
     {
