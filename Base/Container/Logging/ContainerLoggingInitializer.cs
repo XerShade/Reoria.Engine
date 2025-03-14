@@ -12,33 +12,24 @@ public class ContainerLoggingInitializer : Disposable, IContainerLoggingInitiali
 
     public ContainerLoggingInitializer()
     {
-        lock (this.@lock)
-        {
-            this.configuration = new ConfigurationBuilder().Build();
-            this.isConfigurationBuilt = false;
-        }
+        this.configuration = new ConfigurationBuilder().Build();
+        this.isConfigurationBuilt = false;
     }
 
     public ContainerLoggingInitializer(IConfiguration configuration)
     {
-        lock (this.@lock)
-        {
-            this.configuration = configuration;
-            this.isConfigurationBuilt = true;
-        }
+        this.configuration = configuration;
+        this.isConfigurationBuilt = true;
     }
 
     protected virtual IConfiguration BuildInternalConfiguration()
     {
-        lock (this.@lock)
-        {
-            ObjectDisposedException.ThrowIf(this.isDisposed, this);
+        ObjectDisposedException.ThrowIf(this.isDisposed, this);
 
-            IConfigurationBuilder builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        IConfigurationBuilder builder = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-            return builder.Build();
-        }
+        return builder.Build();
     }
 
     public virtual ILoggerFactory Initialize()

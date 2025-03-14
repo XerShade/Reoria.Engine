@@ -21,6 +21,12 @@ public class SerilogLoggingInitializer : ContainerLoggingInitializer
         {
             ObjectDisposedException.ThrowIf(this.isDisposed, this);
 
+            if (!this.isConfigurationBuilt)
+            {
+                this.configuration = this.BuildInternalConfiguration();
+                this.isConfigurationBuilt = true;
+            }
+
             Log.CloseAndFlush();
 
             Log.Logger = new LoggerConfiguration()
@@ -34,11 +40,8 @@ public class SerilogLoggingInitializer : ContainerLoggingInitializer
 
     protected override void FreeUnmanagedObjects()
     {
-        lock(this.@lock)
-        {
-            Log.CloseAndFlush();
+        Log.CloseAndFlush();
 
-            base.FreeUnmanagedObjects();
-        }
+        base.FreeUnmanagedObjects();
     }
 }
