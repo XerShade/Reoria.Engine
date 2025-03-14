@@ -17,22 +17,28 @@ public class SerilogLoggingInitializer : ContainerLoggingInitializer
 
     public override ILoggerFactory Initialize()
     {
-        Log.CloseAndFlush();
+        lock(this.@lock)
+        {
+            ObjectDisposedException.ThrowIf(this.isDisposed, this);
 
-        ObjectDisposedException.ThrowIf(this.isDisposed, this);
+            Log.CloseAndFlush();
 
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(this.configuration)
-            .CreateLogger();
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(this.configuration)
+                .CreateLogger();
 
-        ILoggerFactory loggerFactory = new LoggerFactory([new SerilogLoggerProvider(Log.Logger)]);
-        return loggerFactory;
+            ILoggerFactory loggerFactory = new LoggerFactory([new SerilogLoggerProvider(Log.Logger)]);
+            return loggerFactory;
+        }
     }
 
     protected override void FreeUnmanagedObjects()
     {
-        Log.CloseAndFlush();
+        lock(this.@lock)
+        {
+            Log.CloseAndFlush();
 
-        base.FreeUnmanagedObjects();
+            base.FreeUnmanagedObjects();
+        }
     }
 }

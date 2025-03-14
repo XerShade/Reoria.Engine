@@ -12,37 +12,49 @@ public class ContainerLoggingInitializer : Disposable, IContainerLoggingInitiali
 
     public ContainerLoggingInitializer()
     {
-        this.configuration = new ConfigurationBuilder().Build();
-        this.isConfigurationBuilt = false;
+        lock (this.@lock)
+        {
+            this.configuration = new ConfigurationBuilder().Build();
+            this.isConfigurationBuilt = false;
+        }
     }
 
     public ContainerLoggingInitializer(IConfiguration configuration)
     {
-        this.configuration = configuration;
-        this.isConfigurationBuilt = true;
+        lock (this.@lock)
+        {
+            this.configuration = configuration;
+            this.isConfigurationBuilt = true;
+        }
     }
 
     protected virtual IConfiguration BuildInternalConfiguration()
     {
-        ObjectDisposedException.ThrowIf(this.isDisposed, this);
+        lock (this.@lock)
+        {
+            ObjectDisposedException.ThrowIf(this.isDisposed, this);
 
-        IConfigurationBuilder builder = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            IConfigurationBuilder builder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-        return builder.Build();
+            return builder.Build();
+        }
     }
 
     public virtual ILoggerFactory Initialize()
     {
-        ObjectDisposedException.ThrowIf(this.isDisposed, this);
-
-        if (!this.isConfigurationBuilt)
+        lock (this.@lock)
         {
-            this.configuration = this.BuildInternalConfiguration();
-            this.isConfigurationBuilt = true;
-        }
+            ObjectDisposedException.ThrowIf(this.isDisposed, this);
 
-        ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConfiguration(this.configuration.GetSection("Logging")).AddConsole());
-        return loggerFactory;
+            if (!this.isConfigurationBuilt)
+            {
+                this.configuration = this.BuildInternalConfiguration();
+                this.isConfigurationBuilt = true;
+            }
+
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConfiguration(this.configuration.GetSection("Logging")).AddConsole());
+            return loggerFactory;
+        }
     }
 }
