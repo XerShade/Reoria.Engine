@@ -7,7 +7,7 @@ namespace Reoria.Engine.Base.Container.Logging;
 
 public class SerilogLoggingInitializer : ContainerLoggingInitializer
 {
-    public SerilogLoggingInitializer()
+    public SerilogLoggingInitializer() : base()
     {
     }
 

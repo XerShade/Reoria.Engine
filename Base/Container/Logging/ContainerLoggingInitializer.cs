@@ -7,12 +7,22 @@ namespace Reoria.Engine.Base.Container.Logging;
 
 public class ContainerLoggingInitializer : Disposable, IContainerLoggingInitializer
 {
-    protected readonly IConfiguration configuration;
+    protected IConfiguration configuration;
+    protected bool isConfigurationBuilt;
 
-    public ContainerLoggingInitializer() => this.configuration = this.BuildEarlyConfiguration();
-    public ContainerLoggingInitializer(IConfiguration configuration) => this.configuration = configuration;
+    public ContainerLoggingInitializer()
+    {
+        this.configuration = new ConfigurationBuilder().Build();
+        this.isConfigurationBuilt = false;
+    }
 
-    protected virtual IConfiguration BuildEarlyConfiguration()
+    public ContainerLoggingInitializer(IConfiguration configuration)
+    {
+        this.configuration = configuration;
+        this.isConfigurationBuilt = true;
+    }
+
+    protected virtual IConfiguration BuildInternalConfiguration()
     {
         ObjectDisposedException.ThrowIf(this.isDisposed, this);
 
@@ -25,6 +35,12 @@ public class ContainerLoggingInitializer : Disposable, IContainerLoggingInitiali
     public virtual ILoggerFactory Initialize()
     {
         ObjectDisposedException.ThrowIf(this.isDisposed, this);
+
+        if (!this.isConfigurationBuilt)
+        {
+            this.configuration = this.BuildInternalConfiguration();
+            this.isConfigurationBuilt = true;
+        }
 
         ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConfiguration(this.configuration.GetSection("Logging")).AddConsole());
         return loggerFactory;
