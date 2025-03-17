@@ -26,13 +26,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Services\ServiceRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Events\EventBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Events\Interfaces\IEventBus.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scripting\Attributes\ScriptFunction.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptingService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptLoader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scripting\Interfaces\IScriptLogging.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptingService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptLoader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scripting\LuaScriptLogging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Factories\HashGeneratorFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Factories\SaltGeneratorFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\HashGenerator.cs" />
