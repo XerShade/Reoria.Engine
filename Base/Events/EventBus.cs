@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Reoria.Engine.Base.Common;
 using Reoria.Engine.Base.Container.Attributes;
-using Reoria.Engine.Base.Container.Interfaces;
 using Reoria.Engine.Base.Container.Services;
 using Reoria.Engine.Base.Events.Interfaces;
 using System.Collections.Concurrent;
@@ -27,13 +26,9 @@ public class EventBus : Disposable, IEventBus
     #endregion
 
     #region Event Bus: Service Definitions
-    /// <summary>
-    /// This method is called during the service registration phase, typically by <see cref="IEngineContainer"/> 
-    /// when setting up the application's dependency injection container.
-    /// </summary>
-    /// <param name="services">The <see cref="ContainerServiceDefinitions"/> instance used to register services with the container.</param>
     [ContainerAttribute.DiscoverSerivceDefinitions]
-    protected static void RegisterServices(ContainerServiceDefinitions services) => services.AddSingleton<IEventBus, EventBus>();
+    protected static void RegisterServices(ContainerServiceDefinitions services) => 
+        services.AddSingleton<IEventBus, EventBus>();
     #endregion
 
     /// <summary>

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Reoria.Engine.Base.Container.Attributes;
-using Reoria.Engine.Base.Container.Interfaces;
 using Reoria.Engine.Base.Container.Services;
 using Reoria.Engine.Base.Security.Cryptography.Interfaces;
 using System.Reflection;
@@ -20,14 +19,8 @@ namespace Reoria.Engine.Base.Security.Cryptography;
 public class HashGenerator(IConfiguration configuration) : IHashGenerator
 {
     #region HashGenerator: Service Definitions
-    /// <summary>
-    /// This method is called during the service registration phase, typically by <see cref="IEngineContainer"/> 
-    /// when setting up the application's dependency injection container.
-    /// </summary>
-    /// <param name="services">The <see cref="ContainerServiceDefinitions"/> instance used to register services with the container.</param>
     [ContainerAttribute.DiscoverSerivceDefinitions]
     public static void DiscoverSerivceDefinitions(ContainerServiceDefinitions services) =>
-        // Register IHashGenerator as a scoped service, meaning an instance will be created every time one is requested.
         services.AddScoped<IHashGenerator, HashGenerator>();
     #endregion
 
