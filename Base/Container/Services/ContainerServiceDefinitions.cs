@@ -92,8 +92,6 @@ public class ContainerServiceDefinitions(ILogger<ContainerServiceDefinitions> lo
 
     public virtual void AddScoped<TService>() =>
         this.AddDefinition(ServiceLifetime.Scoped, typeof(TService), typeof(TService));
-    public virtual void AddScoped<TService>(TService instance) =>
-        this.AddDefinition(ServiceLifetime.Scoped, typeof(TService), instance);
     public virtual void AddScoped<TService, TImplementation>()
         where TImplementation : class, TService =>
         this.AddDefinition(ServiceLifetime.Scoped, typeof(TService), typeof(TImplementation));
@@ -106,6 +104,8 @@ public class ContainerServiceDefinitions(ILogger<ContainerServiceDefinitions> lo
 
     public virtual void AddSingleton<TService>() =>
         this.AddDefinition(ServiceLifetime.Singleton, typeof(TService), typeof(TService));
+    public virtual void AddSingleton<TService>(TService instance) =>
+        this.AddDefinition(ServiceLifetime.Singleton, typeof(TService), instance);
     public virtual void AddSingleton<TService, TImplementation>()
         where TImplementation : class, TService =>
         this.AddDefinition(ServiceLifetime.Singleton, typeof(TService), typeof(TImplementation));
