@@ -30,7 +30,10 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
         this.logger = loggerFactory.CreateLogger<IEngineContainer>() ?? throw new NullReferenceException();
         this.logger.LogInformation("Staring game engine container.");
 
-        this.configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+        this.configuration = new ConfigurationBuilder()
+            .AddEnvironmentVariables()
+            .AddUserSecrets(Assembly.GetExecutingAssembly())
+            .Build();
         this.services = new ServiceCollection();
         this.provider = this.services.BuildServiceProvider();
 
@@ -123,7 +126,10 @@ public class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
                 this.OnBuildContainerConfigurationSource(builder, source);
             }
 
-            this.configuration = builder.AddEnvironmentVariables().Build();
+            this.configuration = builder
+                .AddEnvironmentVariables()
+                .AddUserSecrets(Assembly.GetExecutingAssembly())
+                .Build();
 
             _ = this.services.AddSingleton<IConfiguration>(this.configuration);
 
