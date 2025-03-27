@@ -33,11 +33,11 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
 
     protected virtual ILoggingInitializer CreateEarlyLoggingInitalizer<TInitalizer>()
         where TInitalizer : class, TLoggingInitalizer
-        => Activator.CreateInstance<TInitalizer>() 
+        => Activator.CreateInstance<TInitalizer>()
         ?? throw new NullReferenceException("Unable to create logging initializer.");
 
     protected virtual ILoggerFactory CreateEarlyLoggingFactory(ILoggingInitializer loggingInitializer)
-        => loggingInitializer.Initialize() 
+        => loggingInitializer.Initialize()
         ?? throw new NullReferenceException("Unable to create logger factory.");
 
     protected virtual ILogger<IEngineContainer> CreateEarlyLogger()
@@ -79,7 +79,7 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
 
     public virtual IEngineContainer CreateServiceCollection()
     {
-        lock(this.@lock)
+        lock (this.@lock)
         {
             this.logger.LogInformation("Creating engine logger and logger factory.");
             using ILoggingInitializer loggingInitializer = this.CreateLoggingInitalizer<TLoggingInitalizer>(this.configuration)
@@ -96,6 +96,21 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
             _ = this.services.AddSingleton<IConfiguration>(this.configuration);
 
             this.OnCreateServiceCollection(this.services);
+
+            foreach (ServiceDescriptor service in this.services)
+            {
+                if (service.ImplementationType != null)
+                {
+                    this.logger.LogDebug("Added service implementation '{ImplementationType}' for '{ServiceType}' with lifetime '{Lifetime}'.",
+                         service.ImplementationType.Name, service.ServiceType.Name, service.Lifetime);
+                }
+                else
+                {
+                    this.logger.LogDebug("Added service implementation '{ImplementationType}' for '{ServiceType}' with lifetime '{Lifetime}'.",
+                        service.ImplementationInstance?.GetType().Name, service.ServiceType.Name, service.Lifetime);
+                }
+            }
+
             this.logger.LogInformation("Created engine service collection, {count} services have been added to the collection.", this.services.Count);
         }
 
@@ -116,7 +131,37 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
             this.logger.LogInformation("Creating engine service provider.");
             this.provider = this.services.BuildServiceProvider();
             this.OnCreateServiceProvider(this.provider);
-            this.logger.LogInformation("Created engine service provider, {count} services have been built and configured.", this.services.Count);
+
+            int validated_count = 0;
+            foreach (ServiceDescriptor service in this.services)
+            {
+                if(service.ServiceType.IsGenericType)
+                {
+                    this.logger.LogDebug("Validated service implementation '{ImplementationType}' for '{ServiceType}' with lifetime '{Lifetime}'.",
+                        service.ImplementationType?.Name, service.ServiceType.Name, service.Lifetime);
+
+                    validated_count++;
+
+                    continue;
+                }
+
+                try
+                {
+                    object? provided_service = this.provider.GetRequiredService(service.ServiceType);
+
+                    this.logger.LogDebug("Validated service implementation '{ImplementationType}' for '{ServiceType}' with lifetime '{Lifetime}'.",
+                        provided_service?.GetType().Name, service.ServiceType.Name, service.Lifetime);
+
+                    validated_count++;
+                }
+                catch(Exception ex)
+                {
+                    this.logger.LogError("Unable to validate service implementation for '{ServiceType}', reason: {ErrorMessage}.",
+                        service.ServiceType.Name, ex.Message);
+                }
+            }
+
+            this.logger.LogInformation("Created engine service provider, {ValidatedCount} of {ServiceCount} services have been validated.", validated_count, this.services.Count);
         }
 
         return this;
