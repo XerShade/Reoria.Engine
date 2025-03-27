@@ -9,37 +9,34 @@
     <Import_RootNamespace>Reoria.Engine</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Common\ActionQueue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Common\ActionQueueItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Common\Disposable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Common\TimeAccumulator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Attributes\ContainerAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Configuration\ContainerConfigurationSource.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Configuration\ContainerConfigurationSources.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\EngineContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Interfaces\IEngineContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Logging\ContainerLoggingInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Services\ContainerServiceDefinition.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Services\ContainerServiceDefinitions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Services\Enumerations\ServiceLifetime.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Logging\Interfaces\IContainerLoggingInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Logging\SerilogLoggingInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Services\Interfaces\IServiceRegistry.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Container\Services\ServiceRegistry.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Events\EventBus.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Events\Interfaces\IEventBus.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Factories\HashGeneratorFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Factories\SaltGeneratorFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\HashGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\HashGeneratorConfiguration.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Interfaces\IHashGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\Interfaces\ISaltGenerator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\SaltGeneratorConfiguration.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Base\Security\Cryptography\SaltGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\ActionQueue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\ActionQueueItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Disposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\TimeAccumulator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\EngineContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Interfaces\IEngineContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\MicrosoftLoggingInitializer.cs" />
+    <Compile Include="..\..\libraries\Reoria.Engine\Container\Logging\Interfaces\ILoggingInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\SerilogLoggingInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IServiceRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ServiceRegistry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\EventBus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\Interfaces\IEventBus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Factories\HashGeneratorFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Factories\SaltGeneratorFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\HashGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\HashGeneratorConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Interfaces\IHashGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Interfaces\ISaltGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\SaltGeneratorConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\SaltGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Services\" />
   </ItemGroup>
 </Project>
