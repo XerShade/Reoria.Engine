@@ -49,7 +49,7 @@ public class SerilogLoggingInitializer : Disposable, ILoggingInitializer
 
     public virtual ILoggerFactory Initialize()
     {
-        lock(this.@lock)
+        lock (this.@lock)
         {
             ObjectDisposedException.ThrowIf(this.isDisposed, this);
 

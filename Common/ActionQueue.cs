@@ -32,7 +32,7 @@ public class ActionQueue : Disposable, IDisposable
     /// Enqueues an action with default priority and retry settings.
     /// </summary>
     /// <param name="action">The delegate action to enqueue.</param>
-    public virtual void Enqueue(Delegate action) 
+    public virtual void Enqueue(Delegate action)
         => this.Enqueue(action, 5, 5);
 
     /// <summary>
@@ -40,7 +40,7 @@ public class ActionQueue : Disposable, IDisposable
     /// </summary>
     /// <param name="action">The delegate action to enqueue.</param>
     /// <param name="priority">The priority level of the action.</param>
-    public virtual void Enqueue(Delegate action, int priority) 
+    public virtual void Enqueue(Delegate action, int priority)
         => this.Enqueue(action, priority, 5);
 
     /// <summary>
@@ -49,7 +49,7 @@ public class ActionQueue : Disposable, IDisposable
     /// <param name="action">The delegate action to enqueue.</param>
     /// <param name="priority">The priority level of the action.</param>
     /// <param name="maxRetries">The maximum number of retry attempts.</param>
-    public virtual void Enqueue(Delegate action, int priority, int maxRetries) 
+    public virtual void Enqueue(Delegate action, int priority, int maxRetries)
         => this.Enqueue(action, priority, maxRetries, Array.Empty<object>());
 
     /// <summary>
@@ -57,7 +57,7 @@ public class ActionQueue : Disposable, IDisposable
     /// </summary>
     /// <param name="action">The delegate action to enqueue.</param>
     /// <param name="args">The arguments to pass when invoking the action.</param>
-    public virtual void Enqueue(Delegate action, params object[] args) 
+    public virtual void Enqueue(Delegate action, params object[] args)
         => this.Enqueue(action, 5, 5, args);
 
     /// <summary>
@@ -66,7 +66,7 @@ public class ActionQueue : Disposable, IDisposable
     /// <param name="action">The delegate action to enqueue.</param>
     /// <param name="priority">The priority level of the action.</param>
     /// <param name="args">The arguments to pass when invoking the action.</param>
-    public virtual void Enqueue(Delegate action, int priority, params object[] args) 
+    public virtual void Enqueue(Delegate action, int priority, params object[] args)
         => this.Enqueue(action, priority, 5, args);
 
     /// <summary>

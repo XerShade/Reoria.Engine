@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Reoria.Engine.Security.Cryptography.Interfaces;
 using Reoria.Engine.Security.Cryptography;
+using Reoria.Engine.Security.Cryptography.Interfaces;
 
 namespace Reoria.Engine.Common.Security.Cryptography.Factories;
 

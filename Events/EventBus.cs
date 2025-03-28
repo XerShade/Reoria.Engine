@@ -168,7 +168,7 @@ public class EventBus : Disposable, IEventBus
                 TEvent? @event = (TEvent?)Activator.CreateInstance(typeof(TEvent), parameters);
 
                 // Verify that an event instance was created.
-                if(@event != null)
+                if (@event != null)
                 {
                     // Invoke each handler for the event
                     foreach (Delegate handler in this.eventHandlers[typeof(TEvent)])
