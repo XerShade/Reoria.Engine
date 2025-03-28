@@ -28,7 +28,6 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
         this.configuration = this.CreateEarlyConfigurationBuilder(new ConfigurationBuilder()).Build();
         this.services = new ServiceCollection();
         this.provider = this.services.BuildServiceProvider();
-        this.logger.LogInformation("Constructed game engine container.");
     }
 
     protected virtual ILoggingInitializer CreateEarlyLoggingInitalizer<TInitalizer>()
@@ -65,7 +64,6 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
             this.OnCreateConfiguration(builder);
 
             this.configuration = builder.Build();
-            this.logger.LogInformation("Created engine configuration.");
         }
 
         return this;
@@ -88,7 +86,6 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
                 ?? throw new NullReferenceException("Unable to create logger factory.");
             this.logger = loggerFactory.CreateLogger<IEngineContainer>()
                 ?? throw new NullReferenceException("Unable to logger.");
-            this.logger.LogInformation("Created engine logger and logger factory using '{LoggingInitalizer}'.", typeof(TLoggingInitalizer).Name);
 
             this.logger.LogInformation("Creating engine service collection.");
             _ = this.services.AddSingleton<ILoggerFactory>(loggerFactory);
@@ -96,22 +93,6 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
             _ = this.services.AddSingleton<IConfiguration>(this.configuration);
 
             this.OnCreateServiceCollection(this.services);
-
-            foreach (ServiceDescriptor service in this.services)
-            {
-                if (service.ImplementationType != null)
-                {
-                    this.logger.LogDebug("Added service implementation '{ImplementationType}' for '{ServiceType}' with lifetime '{Lifetime}'.",
-                         service.ImplementationType.Name, service.ServiceType.Name, service.Lifetime);
-                }
-                else
-                {
-                    this.logger.LogDebug("Added service implementation '{ImplementationType}' for '{ServiceType}' with lifetime '{Lifetime}'.",
-                        service.ImplementationInstance?.GetType().Name, service.ServiceType.Name, service.Lifetime);
-                }
-            }
-
-            this.logger.LogInformation("Created engine service collection, {count} services have been added to the collection.", this.services.Count);
         }
 
         return this;
@@ -131,37 +112,6 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
             this.logger.LogInformation("Creating engine service provider.");
             this.provider = this.services.BuildServiceProvider();
             this.OnCreateServiceProvider(this.provider);
-
-            int validated_count = 0;
-            foreach (ServiceDescriptor service in this.services)
-            {
-                if(service.ServiceType.IsGenericType)
-                {
-                    this.logger.LogDebug("Validated service implementation '{ImplementationType}' for '{ServiceType}' with lifetime '{Lifetime}'.",
-                        service.ImplementationType?.Name, service.ServiceType.Name, service.Lifetime);
-
-                    validated_count++;
-
-                    continue;
-                }
-
-                try
-                {
-                    object? provided_service = this.provider.GetRequiredService(service.ServiceType);
-
-                    this.logger.LogDebug("Validated service implementation '{ImplementationType}' for '{ServiceType}' with lifetime '{Lifetime}'.",
-                        provided_service?.GetType().Name, service.ServiceType.Name, service.Lifetime);
-
-                    validated_count++;
-                }
-                catch(Exception ex)
-                {
-                    this.logger.LogError("Unable to validate service implementation for '{ServiceType}', reason: {ErrorMessage}.",
-                        service.ServiceType.Name, ex.Message);
-                }
-            }
-
-            this.logger.LogInformation("Created engine service provider, {ValidatedCount} of {ServiceCount} services have been validated.", validated_count, this.services.Count);
         }
 
         return this;
