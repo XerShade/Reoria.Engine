@@ -18,8 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\MicrosoftLoggingInitializer.cs" />
     <Compile Include="..\..\libraries\Reoria.Engine\Container\Logging\Interfaces\ILoggingInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\SerilogLoggingInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Interfaces\IServiceRegistry.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\ServiceRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\EventBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\Interfaces\IEventBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Factories\HashGeneratorFactory.cs" />
@@ -35,8 +33,5 @@
     <None Include="$(MSBuildThisFileDirectory)appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Services\" />
   </ItemGroup>
 </Project>
