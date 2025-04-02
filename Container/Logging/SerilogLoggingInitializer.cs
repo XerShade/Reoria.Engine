@@ -7,22 +7,9 @@ using Serilog.Extensions.Logging;
 
 namespace Reoria.Engine.Container.Logging;
 
-public class SerilogLoggingInitializer : Disposable, ILoggingInitializer
+public class SerilogLoggingInitializer(IConfiguration configuration) : Disposable, ILoggingInitializer
 {
-    protected IConfiguration configuration;
-    protected bool isConfigurationBuilt;
-
-    public SerilogLoggingInitializer()
-    {
-        this.configuration = new ConfigurationBuilder().Build();
-        this.isConfigurationBuilt = false;
-    }
-
-    public SerilogLoggingInitializer(IConfiguration configuration)
-    {
-        this.configuration = configuration;
-        this.isConfigurationBuilt = true;
-    }
+    protected IConfiguration Configuration = configuration;
 
     protected override void FreeUnmanagedObjects()
     {
@@ -31,23 +18,7 @@ public class SerilogLoggingInitializer : Disposable, ILoggingInitializer
         base.FreeUnmanagedObjects();
     }
 
-    protected virtual IConfiguration GetLoggerConfiguration()
-    {
-        ObjectDisposedException.ThrowIf(this.isDisposed, this);
-
-        if (!this.isConfigurationBuilt)
-        {
-            IConfigurationBuilder builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            this.isConfigurationBuilt = true;
-
-            return builder.Build();
-        }
-
-        return this.configuration;
-    }
-
-    public virtual ILoggerFactory Initialize()
+    public virtual ILoggerFactory CreateLoggerFactory()
     {
         lock (this.@lock)
         {
@@ -56,7 +27,7 @@ public class SerilogLoggingInitializer : Disposable, ILoggingInitializer
             Log.CloseAndFlush();
 
             Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(this.GetLoggerConfiguration())
+                .ReadFrom.Configuration(this.Configuration)
                 .CreateLogger();
 
             ILoggerFactory loggerFactory = new LoggerFactory([new SerilogLoggerProvider(Log.Logger)]);

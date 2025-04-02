@@ -11,32 +11,27 @@ namespace Reoria.Engine.Container;
 public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
     where TLoggingInitalizer : class, ILoggingInitializer
 {
-    protected ILogger<IEngineContainer> logger;
-    protected IConfiguration configuration;
-    protected IServiceCollection services;
-    protected IServiceProvider provider;
-
-    public ILogger<IEngineContainer> Logger => this.Logger;
-    public IConfiguration Configuration => this.configuration;
-    public IServiceCollection Services => this.services;
-    public IServiceProvider Provider => this.provider;
+    public ILogger<IEngineContainer> Logger { get; protected set; }
+    public IConfiguration Configuration { get; protected set; }
+    public IServiceCollection Services { get; protected set; }
+    public IServiceProvider Provider { get; protected set; }
 
     public EngineContainer()
     {
-        this.logger = this.CreateEarlyLogger();
-        this.logger.LogInformation("Constructing game engine container.");
-        this.configuration = this.CreateEarlyConfigurationBuilder(new ConfigurationBuilder()).Build();
-        this.services = new ServiceCollection();
-        this.provider = this.services.BuildServiceProvider();
+        this.Services = new ServiceCollection();
+        this.Provider = this.Services.BuildServiceProvider();
+        this.Configuration = this.CreateEarlyConfigurationBuilder(new ConfigurationBuilder()).Build();
+        this.Logger = this.CreateEarlyLogger();
+        this.ReportContainerConstruction();
     }
 
     protected virtual ILoggingInitializer CreateEarlyLoggingInitalizer<TInitalizer>()
         where TInitalizer : class, TLoggingInitalizer
-        => Activator.CreateInstance<TInitalizer>()
+        => Activator.CreateInstance(typeof(TInitalizer), this.Configuration) as TInitalizer
         ?? throw new NullReferenceException("Unable to create logging initializer.");
 
     protected virtual ILoggerFactory CreateEarlyLoggingFactory(ILoggingInitializer loggingInitializer)
-        => loggingInitializer.Initialize()
+        => loggingInitializer.CreateLoggerFactory()
         ?? throw new NullReferenceException("Unable to create logger factory.");
 
     protected virtual ILogger<IEngineContainer> CreateEarlyLogger()
@@ -53,17 +48,28 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
             .AddUserSecrets(Assembly.GetExecutingAssembly());
     }
 
+    protected virtual void ReportContainerConstruction()
+    {
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        if (assembly != null)
+        {
+            this.Logger.LogInformation("Creating the dependency injection container for the game, please wait." +
+                "\n    - Application: '{ApplicationExe}', Version: '{ApplicationVersion}'",
+                assembly.GetName().Name, assembly.GetName().Version);
+        }
+    }
+
     public virtual IEngineContainer CreateConfiguration()
     {
         lock (this.@lock)
         {
-            this.logger.LogInformation("Creating engine configuration.");
+            this.Logger.LogInformation("Creating dependency injection container configuration.");
             IConfigurationBuilder builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory());
 
             this.OnCreateConfiguration(builder);
 
-            this.configuration = builder.Build();
+            this.Configuration = builder.Build();
         }
 
         return this;
@@ -79,20 +85,20 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
     {
         lock (this.@lock)
         {
-            this.logger.LogInformation("Creating engine logger and logger factory.");
-            using ILoggingInitializer loggingInitializer = this.CreateLoggingInitalizer<TLoggingInitalizer>(this.configuration)
+            this.Logger.LogInformation("Creating dependency injection container logger and logger factory.");
+            using ILoggingInitializer loggingInitializer = this.CreateLoggingInitalizer<TLoggingInitalizer>(this.Configuration)
                 ?? throw new NullReferenceException("Unable to create logging initializer.");
-            ILoggerFactory loggerFactory = loggingInitializer.Initialize()
+            ILoggerFactory loggerFactory = loggingInitializer.CreateLoggerFactory()
                 ?? throw new NullReferenceException("Unable to create logger factory.");
-            this.logger = loggerFactory.CreateLogger<IEngineContainer>()
+            this.Logger = loggerFactory.CreateLogger<IEngineContainer>()
                 ?? throw new NullReferenceException("Unable to logger.");
 
-            this.logger.LogInformation("Creating engine service collection.");
-            _ = this.services.AddSingleton<ILoggerFactory>(loggerFactory);
-            _ = this.services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-            _ = this.services.AddSingleton<IConfiguration>(this.configuration);
+            this.Logger.LogInformation("Creating dependency injection container service collection.");
+            _ = this.Services.AddSingleton<ILoggerFactory>(loggerFactory);
+            _ = this.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
+            _ = this.Services.AddSingleton<IConfiguration>(this.Configuration);
 
-            this.OnCreateServiceCollection(this.services);
+            this.OnCreateServiceCollection(this.Services);
         }
 
         return this;
@@ -109,9 +115,9 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
     {
         lock (this.@lock)
         {
-            this.logger.LogInformation("Creating engine service provider.");
-            this.provider = this.services.BuildServiceProvider();
-            this.OnCreateServiceProvider(this.provider);
+            this.Logger.LogInformation("Creating dependency injection container service provider.");
+            this.Provider = this.Services.BuildServiceProvider();
+            this.OnCreateServiceProvider(this.Provider);
         }
 
         return this;

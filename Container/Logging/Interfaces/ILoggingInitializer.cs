@@ -4,5 +4,5 @@ namespace Reoria.Engine.Container.Logging.Interfaces;
 
 public interface ILoggingInitializer : IDisposable, IAsyncDisposable
 {
-    ILoggerFactory Initialize();
+    ILoggerFactory CreateLoggerFactory();
 }
