@@ -12,6 +12,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Common\ActionQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\ActionQueueItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Disposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Encryption\AesEncryptionService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Encryption\Interfaces\IEncryptionService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\TimeAccumulator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\EngineContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Interfaces\IEngineContainer.cs" />
