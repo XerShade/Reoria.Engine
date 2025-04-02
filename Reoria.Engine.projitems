@@ -16,7 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Container\EngineContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Interfaces\IEngineContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\MicrosoftLoggingInitializer.cs" />
-    <Compile Include="..\..\libraries\Reoria.Engine\Container\Logging\Interfaces\ILoggingInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Container\Logging\Interfaces\ILoggingInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\SerilogLoggingInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\EventBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\Interfaces\IEventBus.cs" />
