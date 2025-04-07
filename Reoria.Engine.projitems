@@ -12,15 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Common\ActionQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\ActionQueueItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Disposable.cs" />
-    <Compile Include="..\..\libraries\Reoria.Engine\Common\Security\Encryption\AesEncryption.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Common\TimeAccumulator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Container\EngineContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Container\Interfaces\IEngineContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\MicrosoftLoggingInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)\Container\Logging\Interfaces\ILoggingInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\SerilogLoggingInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\EventBus.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\Interfaces\IEventBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Factories\HashGeneratorFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Factories\SaltGeneratorFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\HashGenerator.cs" />
@@ -29,6 +20,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Interfaces\ISaltGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\SaltGeneratorConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\SaltGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Encryption\AesEncryption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\TimeAccumulator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\EngineContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Interfaces\IEngineContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\MicrosoftLoggingInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\Interfaces\ILoggingInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\SerilogLoggingInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\EventBus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\Interfaces\IEventBus.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)appsettings.json">
