@@ -2,50 +2,52 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Reoria.Engine.Common;
+using Reoria.Engine.Common.Security.Cryptography.Factories;
+using Reoria.Engine.Container.Configuration.Interfaces;
 using Reoria.Engine.Container.Interfaces;
 using Reoria.Engine.Container.Logging.Interfaces;
+using Reoria.Engine.Events;
+using Reoria.Engine.Events.Interfaces;
+using Reoria.Engine.Security.Cryptography;
+using Reoria.Engine.Security.Cryptography.Interfaces;
 using System.Reflection;
 
 namespace Reoria.Engine.Container;
 
-public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineContainer
-    where TLoggingInitalizer : class, ILoggingInitializer
+public abstract class EngineContainer : Disposable, IEngineContainer
 {
     public ILogger<IEngineContainer> Logger { get; protected set; }
     public IConfiguration Configuration { get; protected set; }
     public IServiceCollection Services { get; protected set; }
     public IServiceProvider Provider { get; protected set; }
 
-    public EngineContainer()
+    public EngineContainer(IServiceCollection services)
     {
-        this.Services = new ServiceCollection();
+        this.Services = services;
         this.Provider = this.Services.BuildServiceProvider();
-        this.Configuration = this.CreateEarlyConfigurationBuilder(new ConfigurationBuilder()).Build();
+
+        this.Configuration = this.CreateEarlyConfigurationBuilder().Build();
+        _ = this.Services.AddSingleton<IConfiguration>(this.Configuration);
+        this.Provider = this.Services.BuildServiceProvider();
+
         this.Logger = this.CreateEarlyLogger();
+
+        this.Services = services;
+        this.Provider = this.Services.BuildServiceProvider();
         this.ReportContainerConstruction();
     }
 
-    protected virtual ILoggingInitializer CreateEarlyLoggingInitalizer<TInitalizer>()
-        where TInitalizer : class, TLoggingInitalizer
-        => Activator.CreateInstance(typeof(TInitalizer), this.Configuration) as TInitalizer
-        ?? throw new NullReferenceException("Unable to create logging initializer.");
-
-    protected virtual ILoggerFactory CreateEarlyLoggingFactory(ILoggingInitializer loggingInitializer)
-        => loggingInitializer.CreateLoggerFactory()
-        ?? throw new NullReferenceException("Unable to create logger factory.");
-
-    protected virtual ILogger<IEngineContainer> CreateEarlyLogger()
+    protected virtual IConfigurationBuilder CreateEarlyConfigurationBuilder()
     {
-        using ILoggingInitializer loggingInitializer = this.CreateEarlyLoggingInitalizer<TLoggingInitalizer>();
-        using ILoggerFactory loggerFactory = this.CreateEarlyLoggingFactory(loggingInitializer);
-        return loggerFactory.CreateLogger<IEngineContainer>();
+        IEngineConfigurationProvider provider = this.Provider.GetRequiredService<IEngineConfigurationProvider>();
+        return provider.CreateEarlyConfigurationBuilder();
     }
 
-    protected virtual IConfigurationBuilder CreateEarlyConfigurationBuilder(IConfigurationBuilder builder)
-    {
-        return builder
-            .AddEnvironmentVariables()
-            .AddUserSecrets(Assembly.GetExecutingAssembly());
+    protected virtual ILogger<IEngineContainer> CreateEarlyLogger()
+    { 
+        using ILoggingInitializer loggingInitializer = this.Provider.GetRequiredService<ILoggingInitializer>();
+        using ILoggerFactory loggerFactory = loggingInitializer.CreateLoggerFactory();
+        return loggerFactory.CreateLogger<IEngineContainer>();
     }
 
     protected virtual void ReportContainerConstruction()
@@ -64,21 +66,15 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
         lock (this.@lock)
         {
             this.Logger.LogInformation("Creating dependency injection container configuration.");
-            IConfigurationBuilder builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory());
 
-            this.OnCreateConfiguration(builder);
+            IEngineConfigurationProvider provider = this.Provider.GetRequiredService<IEngineConfigurationProvider>();
 
-            this.Configuration = builder.Build();
+            this.Configuration = provider.CreateConfigurationBuilder().Build();
+
+            _ = this.Services.AddSingleton<IConfiguration>(this.Configuration);
         }
 
         return this;
-    }
-
-    protected virtual void OnCreateConfiguration(IConfigurationBuilder builder)
-    {
-        _ = builder.AddEnvironmentVariables();
-        _ = builder.AddUserSecrets(Assembly.GetExecutingAssembly());
     }
 
     public virtual IEngineContainer CreateServiceCollection()
@@ -86,17 +82,15 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
         lock (this.@lock)
         {
             this.Logger.LogInformation("Creating dependency injection container logger and logger factory.");
-            using ILoggingInitializer loggingInitializer = this.CreateLoggingInitalizer<TLoggingInitalizer>(this.Configuration)
+            using ILoggingInitializer loggingInitializer = this.Provider.GetRequiredService<ILoggingInitializer>()
                 ?? throw new NullReferenceException("Unable to create logging initializer.");
             ILoggerFactory loggerFactory = loggingInitializer.CreateLoggerFactory()
                 ?? throw new NullReferenceException("Unable to create logger factory.");
             this.Logger = loggerFactory.CreateLogger<IEngineContainer>()
                 ?? throw new NullReferenceException("Unable to logger.");
 
-            this.Logger.LogInformation("Creating dependency injection container service collection.");
             _ = this.Services.AddSingleton<ILoggerFactory>(loggerFactory);
             _ = this.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-            _ = this.Services.AddSingleton<IConfiguration>(this.Configuration);
 
             this.OnCreateServiceCollection(this.Services);
         }
@@ -104,12 +98,15 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
         return this;
     }
 
-    protected virtual ILoggingInitializer CreateLoggingInitalizer<TInitalizer>(IConfiguration configuration)
-        where TInitalizer : class, TLoggingInitalizer
-        => Activator.CreateInstance(typeof(TInitalizer), configuration) as TInitalizer
-        ?? throw new NullReferenceException("Unable to create logging initializer.");
+    protected virtual void OnCreateServiceCollection(IServiceCollection services)
+    {
+        this.Logger.LogInformation("Creating dependency injection container service collection.");
 
-    protected virtual void OnCreateServiceCollection(IServiceCollection services) { }
+        _ = services.AddScoped<IHashGenerator, HashGenerator>();
+        _ = services.AddScoped<ISaltGenerator, SaltGenerator>();
+
+        _ = services.AddSingleton<IEventBus, EventBus>();
+    }
 
     public virtual IEngineContainer CreateServiceProvider()
     {
@@ -117,11 +114,17 @@ public abstract class EngineContainer<TLoggingInitalizer> : Disposable, IEngineC
         {
             this.Logger.LogInformation("Creating dependency injection container service provider.");
             this.Provider = this.Services.BuildServiceProvider();
-            this.OnCreateServiceProvider(this.Provider);
+
+            this.Logger.LogInformation("Configuring dependency injection container services.");
+            this.OnConfigureServices(this.Provider);
         }
 
         return this;
     }
 
-    protected virtual void OnCreateServiceProvider(IServiceProvider provider) { }
+    protected virtual void OnConfigureServices(IServiceProvider provider)
+    {
+        HashGeneratorFactory.SetServiceProvider(provider);
+        SaltGeneratorFactory.SetServiceProvider(provider);
+    }
 }
