@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\SaltGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Encryption\AesEncryption.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\TimeAccumulator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\TimeAccumulatorConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\EngineConfigurationProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\Interfaces\IEngineConfigurationProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\EngineContainer.cs" />
