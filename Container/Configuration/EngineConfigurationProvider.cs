@@ -21,8 +21,8 @@ public abstract class EngineConfigurationProvider : Disposable, IEngineConfigura
     public virtual IConfigurationBuilder CreateEarlyConfigurationBuilder()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder();
-        _ = builder.SetBasePath(Directory.GetCurrentDirectory());
-
+        
+        this.OnSetEarlyConfigurationBuilderBasePath(builder);
         this.OnCreateEarlyConfigurationBuilder(builder);
 
         if(this.EnvironmentVariables)
@@ -38,13 +38,16 @@ public abstract class EngineConfigurationProvider : Disposable, IEngineConfigura
         return builder;
     }
 
+    protected virtual void OnSetEarlyConfigurationBuilderBasePath(IConfigurationBuilder builder)
+        => builder.SetBasePath(Directory.GetCurrentDirectory());
+
     protected abstract void OnCreateEarlyConfigurationBuilder(IConfigurationBuilder builder);
 
     public virtual IConfigurationBuilder CreateConfigurationBuilder()
     {
         IConfigurationBuilder builder = new ConfigurationBuilder();
-        _ = builder.SetBasePath(Directory.GetCurrentDirectory());
 
+        this.OnSetConfigurationBuilderBasePath(builder);
         this.OnCreateConfigurationBuilder(builder);
 
         if (this.EnvironmentVariables)
@@ -59,6 +62,9 @@ public abstract class EngineConfigurationProvider : Disposable, IEngineConfigura
 
         return builder;
     }
+
+    protected virtual void OnSetConfigurationBuilderBasePath(IConfigurationBuilder builder)
+        => builder.SetBasePath(Directory.GetCurrentDirectory());
 
     protected abstract void OnCreateConfigurationBuilder(IConfigurationBuilder builder);
 }
