@@ -6,8 +6,6 @@ using Reoria.Engine.Common.Security.Cryptography.Factories;
 using Reoria.Engine.Container.Configuration.Interfaces;
 using Reoria.Engine.Container.Interfaces;
 using Reoria.Engine.Container.Logging.Interfaces;
-using Reoria.Engine.Events;
-using Reoria.Engine.Events.Interfaces;
 using Reoria.Engine.Security.Cryptography;
 using Reoria.Engine.Security.Cryptography.Interfaces;
 using System.Reflection;
@@ -104,8 +102,6 @@ public abstract class EngineContainer : Disposable, IEngineContainer
 
         _ = services.AddScoped<IHashGenerator, HashGenerator>();
         _ = services.AddScoped<ISaltGenerator, SaltGenerator>();
-
-        _ = services.AddSingleton<IEventBus, EventBus>();
     }
 
     public virtual IEngineContainer CreateServiceProvider()
