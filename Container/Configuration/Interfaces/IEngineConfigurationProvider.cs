@@ -9,6 +9,7 @@ public interface IEngineConfigurationProvider : IDisposable, IAsyncDisposable
     string Environment { get; }
     string Version { get; }
 
-    IConfigurationBuilder CreateConfigurationBuilder();
-    IConfigurationBuilder CreateEarlyConfigurationBuilder();
+    IConfigurationBuilder AddEnvironmentJsonFile(string path, bool reloadOnChange);
+    IConfigurationBuilder AddJsonFile(string path, bool optional, bool reloadOnChange);
+    IConfigurationBuilder GetConfigurationBuilder();
 }

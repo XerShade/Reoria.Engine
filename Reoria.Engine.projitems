@@ -24,12 +24,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Common\TimeAccumulator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\TimeAccumulatorConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\EngineConfigurationProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\EngineConfigurationSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\EngineConfigurationSources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\Interfaces\IEngineConfigurationProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\Interfaces\IEngineConfigurationSources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\StartupConfigurationSources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\EngineContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Interfaces\IEngineContainer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\MicrosoftLoggingInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\Interfaces\ILoggingInitializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\SerilogLoggingInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\BaseLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\MicrosoftLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\Interfaces\IEngineLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\SerilogLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\StartupLoggerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)appsettings.json">

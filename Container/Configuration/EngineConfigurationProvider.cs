@@ -5,8 +5,10 @@ using System.Reflection;
 
 namespace Reoria.Engine.Container.Configuration;
 
-public abstract class EngineConfigurationProvider : Disposable, IEngineConfigurationProvider
+public class EngineConfigurationProvider : Disposable, IEngineConfigurationProvider
 {
+    protected readonly IConfigurationBuilder Builder;
+
     public virtual string Environment { get; } = string.Empty;
     public virtual string Version { get; } = string.Empty;
     public virtual bool EnvironmentVariables { get; } = true;
@@ -16,55 +18,49 @@ public abstract class EngineConfigurationProvider : Disposable, IEngineConfigura
     {
         this.Environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
         this.Version = Assembly.GetExecutingAssembly().GetName()?.Version?.ToString() ?? "1.0.0.0";
+
+        this.Builder = new ConfigurationBuilder().SetBasePath(this.GetCurrentDirectory());
     }
 
-    public virtual IConfigurationBuilder CreateEarlyConfigurationBuilder()
+    public virtual IConfigurationBuilder GetConfigurationBuilder()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder();
-        
-        this.OnSetEarlyConfigurationBuilderBasePath(builder);
-        this.OnCreateEarlyConfigurationBuilder(builder);
+        _ = this.AddEnvironmentVariables();
+        _ = this.AddUserSecrets(Assembly.GetExecutingAssembly());
 
-        if(this.EnvironmentVariables)
-        {
-            _ = builder.AddEnvironmentVariables();
-        }
-
-        if (this.UserSecrets)
-        {
-            _ = builder.AddUserSecrets(Assembly.GetExecutingAssembly());
-        }
-
-        return builder;
+        return this.Builder;
     }
 
-    protected virtual void OnSetEarlyConfigurationBuilderBasePath(IConfigurationBuilder builder)
-        => builder.SetBasePath(Directory.GetCurrentDirectory());
+    protected virtual string GetCurrentDirectory()
+        => Directory.GetCurrentDirectory();
 
-    protected abstract void OnCreateEarlyConfigurationBuilder(IConfigurationBuilder builder);
+    public virtual IConfigurationBuilder AddJsonFile(string path, bool optional, bool reloadOnChange)
+        => this.Builder.AddJsonFile(path, optional: optional, reloadOnChange: reloadOnChange);
 
-    public virtual IConfigurationBuilder CreateConfigurationBuilder()
+    public virtual IConfigurationBuilder AddEnvironmentJsonFile(string path, bool reloadOnChange)
+        => this.AddJsonFile(path.Replace(".json", $".{this.Environment}.json".ToLower()), true, reloadOnChange);
+
+    protected virtual IConfigurationBuilder AddEnvironmentVariables()
     {
-        IConfigurationBuilder builder = new ConfigurationBuilder();
-
-        this.OnSetConfigurationBuilderBasePath(builder);
-        this.OnCreateConfigurationBuilder(builder);
+        ArgumentNullException.ThrowIfNull(this.Builder);
 
         if (this.EnvironmentVariables)
         {
-            _ = builder.AddEnvironmentVariables();
+            _ = this.Builder.AddEnvironmentVariables();
         }
 
-        if (this.UserSecrets)
-        {
-            _ = builder.AddUserSecrets(Assembly.GetExecutingAssembly());
-        }
-
-        return builder;
+        return this.Builder;
     }
 
-    protected virtual void OnSetConfigurationBuilderBasePath(IConfigurationBuilder builder)
-        => builder.SetBasePath(Directory.GetCurrentDirectory());
+    protected virtual IConfigurationBuilder AddUserSecrets(Assembly assembly)
+    {
+        ArgumentNullException.ThrowIfNull(this.Builder);
+        ArgumentNullException.ThrowIfNull(assembly);
 
-    protected abstract void OnCreateConfigurationBuilder(IConfigurationBuilder builder);
+        if (this.EnvironmentVariables)
+        {
+            _ = this.Builder.AddUserSecrets(assembly);
+        }
+
+        return this.Builder;
+    }
 }

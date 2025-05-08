@@ -10,8 +10,4 @@ public interface IEngineContainer : IDisposable, IAsyncDisposable
     ILogger<IEngineContainer> Logger { get; }
     IServiceProvider Provider { get; }
     IServiceCollection Services { get; }
-
-    IEngineContainer CreateConfiguration();
-    IEngineContainer CreateServiceCollection();
-    IEngineContainer CreateServiceProvider();
 }
