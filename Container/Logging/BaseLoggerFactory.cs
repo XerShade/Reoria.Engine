@@ -10,9 +10,23 @@ public abstract class BaseLoggerFactory : Disposable, IEngineLoggerFactory
     protected ILoggerFactory LoggerFactory;
 
     public virtual ILoggerFactory GetLoggerFactory()
-        => this.LoggerFactory;
+    {
+        lock (this.@lock)
+        {
+            ObjectDisposedException.ThrowIf(this.isDisposed, this);
+
+            return this.LoggerFactory;
+        }
+    }
 
     public virtual ILogger<T> GetLogger<T>()
-        => this.LoggerFactory.CreateLogger<T>();
+    {
+        lock (this.@lock)
+        {
+            ObjectDisposedException.ThrowIf(this.isDisposed, this);
+
+            return this.LoggerFactory.CreateLogger<T>();
+        }
+    }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
