@@ -13,7 +13,15 @@ public class MicrosoftLoggingInitializer : BaseLoggerFactory
         {
             ObjectDisposedException.ThrowIf(this.isDisposed, this);
 
-            this.LoggerFactory = MsLoggerFactory.Create(builder => builder.AddConfiguration(configurationSources.GetConfiguration().GetSection("Logging")).AddConsole());
+            this.SetupMicrosoftLogging(configurationSources.GetConfiguration());
         }
     }
+
+    protected MicrosoftLoggingInitializer()
+    {
+        // Do nothing in this constructor, it merely exists for classes that inherit this class.
+    }
+
+    protected virtual void SetupMicrosoftLogging(IConfiguration configuration) 
+        => this.LoggerFactory = MsLoggerFactory.Create(builder => builder.AddConfiguration(configuration.GetSection("Logging")).AddConsole());
 }
