@@ -16,7 +16,11 @@ public class EngineConfigurationProvider : Disposable, IEngineConfigurationProvi
 
     public EngineConfigurationProvider()
     {
+#if !DEBUG
         this.Environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+#else
+        this.Environment = "Development";
+#endif
         this.Version = Assembly.GetExecutingAssembly().GetName()?.Version?.ToString() ?? "1.0.0.0";
 
         this.Builder = new ConfigurationBuilder().SetBasePath(this.GetCurrentDirectory());
