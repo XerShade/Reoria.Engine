@@ -36,6 +36,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\Interfaces\IEngineLoggerFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\SerilogLoggerFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\StartupLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Signals\Interfaces\ISignalBus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Signals\Interfaces\ISignalBus.Overloads.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Signals\SignalBus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Signals\SignalBus.Overloads.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)appsettings.json">
