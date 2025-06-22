@@ -9,6 +9,8 @@ using Reoria.Engine.Container.Logging;
 using Reoria.Engine.Container.Logging.Interfaces;
 using Reoria.Engine.Security.Cryptography;
 using Reoria.Engine.Security.Cryptography.Interfaces;
+using Reoria.Engine.Signals;
+using Reoria.Engine.Signals.Interfaces;
 using System.Reflection;
 
 namespace Reoria.Engine.Container;
@@ -109,6 +111,7 @@ public abstract class EngineContainer : Disposable, IEngineContainer
     {
         _ = services.AddScoped<IHashGenerator, HashGenerator>();
         _ = services.AddScoped<ISaltGenerator, SaltGenerator>();
+        _ = services.AddSingleton<ISignalBus, SignalBus>();
     }
 
     protected virtual void OnConfigureServices(IServiceProvider provider)
