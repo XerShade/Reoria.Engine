@@ -7,6 +7,8 @@ using Reoria.Engine.Container.Interfaces;
 using Reoria.Engine.Container.Logging;
 using Reoria.Engine.Container.Logging.Interfaces;
 using Reoria.Engine.Container.Registrars;
+using Reoria.Engine.Container.Services;
+using Reoria.Engine.Container.Services.Interfaces;
 using System.Reflection;
 
 namespace Reoria.Engine.Container;
@@ -113,15 +115,16 @@ public class EngineContainer : Disposable, IEngineContainer
         {
             this.Logger.LogInformation("Creating dependency injection container service collection.");
 
+            IServiceRegistryGuard registryGuard = new ServiceRegistryGuard(this.LoggerFactory.CreateLogger<IServiceRegistryGuard>(), services);
+            IEnumerable<IServiceRegistrar> registrars = this.GetRegistrars<IServiceRegistrar>();
+
             _ = services.AddSingleton<IConfiguration>(this.Configuration);
             _ = services.AddSingleton<ILoggerFactory>(this.LoggerFactory);
             _ = services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
-            IEnumerable<IServiceRegistrar> registrars = this.GetRegistrars<IServiceRegistrar>();
-
             foreach (IServiceRegistrar registrar in registrars)
             {
-                registrar.RegisterServices(services);
+                registrar.RegisterServices(registryGuard);
             }
 
             return services;

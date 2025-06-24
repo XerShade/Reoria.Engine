@@ -41,6 +41,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Container\Registrars\IConfigurationRegistrar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Registrars\IServiceConfigurationRegistrar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Registrars\IServiceRegistrar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Services\Interfaces\IServiceRegistryGuard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Services\ServiceRegistryGuard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Signals\Interfaces\ISignalBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Signals\Interfaces\ISignalBus.Overloads.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Signals\Registrars\SignalBusRegistrar.cs" />

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Reoria.Engine.Container.Services.Interfaces;
 
 namespace Reoria.Engine.Container.Registrars;
 
@@ -10,6 +11,6 @@ public interface IServiceRegistrar
     /// <summary>
     /// Registers application services into the given <see cref="IServiceCollection"/>.
     /// </summary>
-    /// <param name="services">The service collection to register services into.</param>
-    void RegisterServices(IServiceCollection services);
+    /// <param name="registryGuard">The service registry guard to register services into.</param>
+    void RegisterServices(IServiceRegistryGuard registryGuard);
 }
