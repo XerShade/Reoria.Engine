@@ -2,20 +2,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Reoria.Engine.Common;
-using Reoria.Engine.Common.Security.Cryptography.Factories;
 using Reoria.Engine.Container.Configuration.Interfaces;
 using Reoria.Engine.Container.Interfaces;
 using Reoria.Engine.Container.Logging;
 using Reoria.Engine.Container.Logging.Interfaces;
-using Reoria.Engine.Security.Cryptography;
-using Reoria.Engine.Security.Cryptography.Interfaces;
-using Reoria.Engine.Signals;
-using Reoria.Engine.Signals.Interfaces;
+using Reoria.Engine.Container.Registrars;
 using System.Reflection;
 
 namespace Reoria.Engine.Container;
 
-public abstract class EngineContainer : Disposable, IEngineContainer
+public class EngineContainer : Disposable, IEngineContainer
 {
     public ILogger<IEngineContainer> Logger { get; protected set; }
     public ILoggerFactory LoggerFactory { get; protected set; }
@@ -47,11 +43,45 @@ public abstract class EngineContainer : Disposable, IEngineContainer
         }
     }
 
+    protected virtual IEnumerable<TRegistrar> GetRegistrars<TRegistrar>()
+    {
+        List<TRegistrar> registrars = [];
+        IEnumerable<Type> registrarTypes = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a => a.GetTypes())
+            .Where(t => typeof(TRegistrar).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
+            .ToArray();
+
+        foreach (Type type in registrarTypes)
+        {
+            try
+            {
+                TRegistrar registrar = (TRegistrar)Activator.CreateInstance(type)!;
+                registrars.Add(registrar);
+                this.Logger.LogDebug("Created new instance of registrar '{RegistrarType}'.", type.Name);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogWarning("Unable to load registrar of type '{RegistrarType}', reason: '{ErrorMessage}'", type.Name, ex.Message);
+            }
+        }
+
+        this.Logger.LogInformation("Successfully loaded '{Count}' of '{TypeCount}' {RegistrarType} registrars.", registrars.Count, registrarTypes.Count(), typeof(TRegistrar).Name);
+
+        return registrars.AsEnumerable();
+    }
+
     protected virtual IConfiguration CreateConfiguration(IEngineConfigurationSources configurationSources)
     {
         lock (this.@lock)
         {
             this.Logger.LogInformation("Creating dependency injection container configuration.");
+
+            IEnumerable<IConfigurationRegistrar> registrars = this.GetRegistrars<IConfigurationRegistrar>();
+
+            foreach (IConfigurationRegistrar registrar in registrars)
+            {
+                registrar.RegisterSources(configurationSources);
+            }
 
             return configurationSources.GetConfiguration();
         }
@@ -63,7 +93,7 @@ public abstract class EngineContainer : Disposable, IEngineContainer
         {
             this.Logger.LogInformation("Creating dependency injection container logger factory.");
 
-            return engineLoggerFactory.GetLoggerFactory();
+            return engineLoggerFactory.SetupFactory(this.Configuration).GetLoggerFactory();
         }
     }
 
@@ -87,7 +117,12 @@ public abstract class EngineContainer : Disposable, IEngineContainer
             _ = services.AddSingleton<ILoggerFactory>(this.LoggerFactory);
             _ = services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
-            this.OnCreateServiceCollection(services);
+            IEnumerable<IServiceRegistrar> registrars = this.GetRegistrars<IServiceRegistrar>();
+
+            foreach (IServiceRegistrar registrar in registrars)
+            {
+                registrar.RegisterServices(services);
+            }
 
             return services;
         }
@@ -101,22 +136,15 @@ public abstract class EngineContainer : Disposable, IEngineContainer
             IServiceProvider provider = this.Services.BuildServiceProvider();
 
             this.Logger.LogInformation("Configuring dependency injection container services.");
-            this.OnConfigureServices(provider);
+
+            IEnumerable<IServiceConfigurationRegistrar> registrars = this.GetRegistrars<IServiceConfigurationRegistrar>();
+
+            foreach (IServiceConfigurationRegistrar registrar in registrars)
+            {
+                registrar.ConfigureServices(provider);
+            }
 
             return provider;
         }
-    }
-
-    protected virtual void OnCreateServiceCollection(IServiceCollection services)
-    {
-        _ = services.AddScoped<IHashGenerator, HashGenerator>();
-        _ = services.AddScoped<ISaltGenerator, SaltGenerator>();
-        _ = services.AddSingleton<ISignalBus, SignalBus>();
-    }
-
-    protected virtual void OnConfigureServices(IServiceProvider provider)
-    {
-        HashGeneratorFactory.SetServiceProvider(provider);
-        SaltGeneratorFactory.SetServiceProvider(provider);
     }
 }

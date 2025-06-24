@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Reoria.Engine.Container.Configuration;
 using Reoria.Engine.Container.Configuration.Interfaces;
 
 namespace Reoria.Engine.Container.Logging;
@@ -12,9 +11,11 @@ public sealed class StartupLoggerFactory : SerilogLoggerFactory
         {
             ObjectDisposedException.ThrowIf(this.isDisposed, this);
 
-            IEngineConfigurationProvider configurationProvider = serviceProvider.GetRequiredService<IEngineConfigurationProvider>();
+            IEngineConfigurationSources configurationSources = serviceProvider.GetRequiredService<IEngineConfigurationSources>();
 
-            this.SetupSerilog(new StartupConfigurationSources(configurationProvider).GetConfiguration());
+            configurationSources.AddSource("appsettings.json", optional: false, reloadOnChange: true);
+
+            this.SetupSerilog(configurationSources.GetConfiguration());
         }
     }
 }

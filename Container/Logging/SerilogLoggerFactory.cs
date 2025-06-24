@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Reoria.Engine.Container.Configuration.Interfaces;
+using Reoria.Engine.Container.Logging.Interfaces;
 using Serilog;
 using Serilog.Extensions.Logging;
 
@@ -8,19 +8,18 @@ namespace Reoria.Engine.Container.Logging;
 
 public class SerilogLoggerFactory : BaseLoggerFactory
 {
-    public SerilogLoggerFactory(IEngineConfigurationSources configurationSources)
+    protected override void FreeUnmanagedObjects()
     {
-        lock (this.@lock)
-        {
-            ObjectDisposedException.ThrowIf(this.isDisposed, this);
+        Log.CloseAndFlush();
 
-            this.SetupSerilog(configurationSources.GetConfiguration());
-        }
+        base.FreeUnmanagedObjects();
     }
 
-    protected SerilogLoggerFactory()
+    public override IEngineLoggerFactory SetupFactory(IConfiguration configuration)
     {
-        // Do nothing in this constructor, it merely exists for classes that inherit this class.
+        this.SetupSerilog(configuration);
+
+        return this;
     }
 
     protected virtual void SetupSerilog(IConfiguration configuration)
@@ -32,12 +31,5 @@ public class SerilogLoggerFactory : BaseLoggerFactory
             .CreateLogger();
 
         this.LoggerFactory = new LoggerFactory([new SerilogLoggerProvider(Log.Logger)]);
-    }
-
-    protected override void FreeUnmanagedObjects()
-    {
-        Log.CloseAndFlush();
-
-        base.FreeUnmanagedObjects();
     }
 }

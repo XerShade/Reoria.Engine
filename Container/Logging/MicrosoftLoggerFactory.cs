@@ -1,25 +1,17 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Reoria.Engine.Container.Configuration.Interfaces;
+using Reoria.Engine.Container.Logging.Interfaces;
 using MsLoggerFactory = Microsoft.Extensions.Logging.LoggerFactory;
 
 namespace Reoria.Engine.Container.Logging;
 
 public class MicrosoftLoggingInitializer : BaseLoggerFactory
 {
-    public MicrosoftLoggingInitializer(IEngineConfigurationSources configurationSources)
+    public override IEngineLoggerFactory SetupFactory(IConfiguration configuration)
     {
-        lock (this.@lock)
-        {
-            ObjectDisposedException.ThrowIf(this.isDisposed, this);
+        this.SetupMicrosoftLogging(configuration);
 
-            this.SetupMicrosoftLogging(configurationSources.GetConfiguration());
-        }
-    }
-
-    protected MicrosoftLoggingInitializer()
-    {
-        // Do nothing in this constructor, it merely exists for classes that inherit this class.
+        return this;
     }
 
     protected virtual void SetupMicrosoftLogging(IConfiguration configuration) 

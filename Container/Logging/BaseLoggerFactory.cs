@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Reoria.Engine.Common;
 using Reoria.Engine.Container.Logging.Interfaces;
 
@@ -8,6 +9,8 @@ namespace Reoria.Engine.Container.Logging;
 public abstract class BaseLoggerFactory : Disposable, IEngineLoggerFactory
 {
     protected ILoggerFactory LoggerFactory;
+
+    public abstract IEngineLoggerFactory SetupFactory(IConfiguration configuration);
 
     public virtual ILoggerFactory GetLoggerFactory()
     {

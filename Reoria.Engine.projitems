@@ -18,6 +18,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\HashGeneratorConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Interfaces\IHashGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Interfaces\ISaltGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Registrars\HashGeneratorRegistrar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\Registrars\SaltGeneratorRegistrar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\SaltGeneratorConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Cryptography\SaltGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Common\Security\Encryption\AesEncryption.cs" />
@@ -28,7 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\EngineConfigurationSources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\Interfaces\IEngineConfigurationProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\Interfaces\IEngineConfigurationSources.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\StartupConfigurationSources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Configuration\Registrars\EngineConfigurationRegistrar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\EngineContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Interfaces\IEngineContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\BaseLoggerFactory.cs" />
@@ -36,8 +38,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\Interfaces\IEngineLoggerFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\SerilogLoggerFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Container\Logging\StartupLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Registrars\IConfigurationRegistrar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Registrars\IServiceConfigurationRegistrar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Container\Registrars\IServiceRegistrar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Signals\Interfaces\ISignalBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Signals\Interfaces\ISignalBus.Overloads.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Signals\Registrars\SignalBusRegistrar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Signals\SignalBus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Signals\SignalBus.Overloads.cs" />
   </ItemGroup>
