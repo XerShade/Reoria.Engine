@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Reoria.Engine.Common;
@@ -7,18 +9,16 @@ using Reoria.Engine.Container.Interfaces;
 using Reoria.Engine.Container.Logging;
 using Reoria.Engine.Container.Logging.Interfaces;
 using Reoria.Engine.Container.Registrars;
-using Reoria.Engine.Container.Services;
-using Reoria.Engine.Container.Services.Interfaces;
 using System.Reflection;
 
 namespace Reoria.Engine.Container;
 
 public class EngineContainer : Disposable, IEngineContainer
 {
+    protected readonly ContainerBuilder ContainerBuilder;
     public ILogger<IEngineContainer> Logger { get; protected set; }
     public ILoggerFactory LoggerFactory { get; protected set; }
     public IConfiguration Configuration { get; protected set; }
-    public IServiceCollection Services { get; protected set; }
     public IServiceProvider Provider { get; protected set; }
 
     public EngineContainer(IServiceCollection services)
@@ -30,7 +30,7 @@ public class EngineContainer : Disposable, IEngineContainer
         this.Configuration = this.CreateConfiguration(serviceProvider.GetRequiredService<IEngineConfigurationSources>());
         this.LoggerFactory = this.CreateLoggerFactory(serviceProvider.GetRequiredService<IEngineLoggerFactory>());
         this.Logger = this.CreateLogger(this.LoggerFactory);
-        this.Services = this.CreateServiceCollection(services);
+        this.ContainerBuilder = this.CreateServiceCollection(services);
         this.Provider = this.CreateServiceProvider();
     }
 
@@ -109,25 +109,36 @@ public class EngineContainer : Disposable, IEngineContainer
         }
     }
 
-    protected virtual IServiceCollection CreateServiceCollection(IServiceCollection services)
+    protected virtual ContainerBuilder CreateServiceCollection(IServiceCollection services)
     {
         lock (this.@lock)
         {
-            this.Logger.LogInformation("Creating dependency injection container service collection.");
+            this.Logger.LogInformation("Creating Autofac-based dependency injection container.");
 
-            IServiceRegistryGuard registryGuard = new ServiceRegistryGuard(this.LoggerFactory.CreateLogger<IServiceRegistryGuard>(), services);
+            ContainerBuilder builder = new();
+
+            builder.Populate(services);
+
+            _ = builder.RegisterInstance(this.Configuration)
+                .As<IConfiguration>()
+                .SingleInstance();
+
+            _ = builder.RegisterInstance(this.LoggerFactory)
+                .As<ILoggerFactory>()
+                .SingleInstance();
+
+            _ = builder.RegisterGeneric(typeof(Logger<>))
+                .As(typeof(ILogger<>))
+                .SingleInstance();
+
             IEnumerable<IServiceRegistrar> registrars = this.GetRegistrars<IServiceRegistrar>();
-
-            _ = services.AddSingleton<IConfiguration>(this.Configuration);
-            _ = services.AddSingleton<ILoggerFactory>(this.LoggerFactory);
-            _ = services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
             foreach (IServiceRegistrar registrar in registrars)
             {
-                registrar.RegisterServices(registryGuard);
+                registrar.RegisterServices(builder, this.Configuration, this.LoggerFactory);
             }
 
-            return services;
+            return builder;
         }
     }
 
@@ -135,10 +146,12 @@ public class EngineContainer : Disposable, IEngineContainer
     {
         lock (this.@lock)
         {
-            this.Logger.LogInformation("Creating dependency injection container service provider.");
-            IServiceProvider provider = this.Services.BuildServiceProvider();
+            this.Logger.LogInformation("Creating Autofac-based dependency injection container service provider.");
 
-            this.Logger.LogInformation("Configuring dependency injection container services.");
+            IContainer container = this.ContainerBuilder.Build();
+            IServiceProvider provider = new AutofacServiceProvider(container);
+
+            this.Logger.LogInformation("Configuring Autofac-based dependency injection container service provider.");
 
             IEnumerable<IServiceConfigurationRegistrar> registrars = this.GetRegistrars<IServiceConfigurationRegistrar>();
 

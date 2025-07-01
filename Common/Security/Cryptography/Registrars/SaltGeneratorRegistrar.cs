@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Autofac;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Reoria.Engine.Common.Security.Cryptography.Factories;
 using Reoria.Engine.Container.Registrars;
-using Reoria.Engine.Container.Services.Interfaces;
 using Reoria.Engine.Security.Cryptography;
 using Reoria.Engine.Security.Cryptography.Interfaces;
 
@@ -12,6 +13,6 @@ public class SaltGeneratorRegistrar : IServiceRegistrar, IServiceConfigurationRe
     public void ConfigureServices(IServiceProvider provider)
         => SaltGeneratorFactory.SetServiceProvider(provider);
 
-    public void RegisterServices(IServiceRegistryGuard registryGuard)
-        => registryGuard.TryRegister<ISaltGenerator, SaltGenerator>(ServiceLifetime.Transient);
+    public void RegisterServices(ContainerBuilder builder, IConfiguration configuration, ILoggerFactory loggerFactory)
+        => builder.RegisterType<SaltGenerator>().As<ISaltGenerator>().InstancePerDependency();
 }
